@@ -22,6 +22,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { PropertyDetailDialog } from "./PropertyDetailDialog";
+import { cn } from "@/lib/utils";
 
 interface UndervaluedProperty {
   id: string;
@@ -255,37 +256,54 @@ export const UndervaluedProperties = () => {
   };
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between p-4 border-b border-border/50">
-      {/* Left - PDF Download */}
-      <Button variant="outline" size="sm" className="gap-2">
-        <FileDown className="h-4 w-4" />
-        PDF
-      </Button>
+    <div className="flex items-center justify-between border-b border-border px-6 py-4">
+      {/* Left - Title and PDF */}
+      <div className="flex items-center gap-4">
+        <div>
+          <h1 className="text-md font-semibold text-foreground">Undervalued Properties</h1>
+          <p className="text-sm text-muted-foreground">
+            {mockProperties.length} listings found
+          </p>
+        </div>
+        <Button variant="outline" size="sm" className="gap-2 text-foreground">
+          <FileDown className="h-4 w-4" />
+          PDF
+        </Button>
+      </div>
 
       {/* Center - View Toggle */}
-      <div className="flex items-center bg-muted rounded-lg p-1">
+      <div className="flex items-center rounded-lg border border-border bg-card p-1 gap-1">
         <Button
-          variant={viewMode === "grid" ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
-          className="gap-2 h-8"
+          className={cn(
+            "gap-2 rounded-md px-3",
+            viewMode === "grid" && "bg-muted"
+          )}
           onClick={() => setViewMode("grid")}
         >
           <Grid3X3 className="h-4 w-4" />
           Grid
         </Button>
         <Button
-          variant={viewMode === "map" ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
-          className="gap-2 h-8"
+          className={cn(
+            "gap-2 rounded-md px-3",
+            viewMode === "map" && "bg-muted"
+          )}
           onClick={() => setViewMode("map")}
         >
           <Map className="h-4 w-4" />
           Map
         </Button>
         <Button
-          variant={viewMode === "table" ? "default" : "ghost"}
+          variant="ghost"
           size="sm"
-          className="gap-2 h-8"
+          className={cn(
+            "gap-2 rounded-md px-3",
+            viewMode === "table" && "bg-muted"
+          )}
           onClick={() => setViewMode("table")}
         >
           <List className="h-4 w-4" />
@@ -300,9 +318,6 @@ export const UndervaluedProperties = () => {
         </Badge>
         <Badge variant="secondary" className="cursor-pointer">
           {areaUnit === "sqm" ? "m²" : "sqft"}
-        </Badge>
-        <Badge variant="secondary" className="cursor-pointer">
-          EN
         </Badge>
       </div>
     </div>

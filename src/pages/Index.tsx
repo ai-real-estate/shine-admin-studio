@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MiniSidebar } from "@/components/MiniSidebar";
 import { SettingsPanel } from "@/components/SettingsPanel";
-
+import { PromptChatWindow } from "@/components/PromptChatWindow";
 const Index = () => {
   const [activeItem, setActiveItem] = useState("api");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -47,7 +47,7 @@ const Index = () => {
             boxShadow: '0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)'
           }}
         >
-          <p className="text-muted-foreground">Main content area</p>
+          <PromptChatWindow userName="User" />
         </div>
       </main>
     </div>

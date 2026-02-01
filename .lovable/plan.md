@@ -1,172 +1,180 @@
 
-# Undervalued Properties Component Implementation
 
-Create a new component for displaying undervalued investment properties that will be triggered by the keyword "undervalued" in the chat. The component displays properties in Grid, Map, and Table views with investment-focused data.
+# Generate Listing Component Implementation
+
+Create a new component for property listing generation that allows agents to create and publish property listings across multiple platforms. The component will be triggered by "generate listing" keyword and displayed in the right chat section.
 
 ## Overview
 
-Based on the reference screenshots, the UndervaluedProperties component will include:
+The GenerateListing component provides a workflow for agents to:
+1. Review/edit auto-generated listing content (from chat input or uploaded photos)
+2. Preview the formatted listing with all details
+3. Select target platforms and publish the listing
 
-1. **Header**: PDF download button (left), View mode toggle (Grid/Map/Table center), Currency/unit toggles (right)
-2. **Grid View**: Investment property cards with images, specs, key facts, and action buttons
-3. **Map View**: Interactive map with ranked property markers
-4. **Table View**: Sortable data table with investment metrics
-
-## Files to Modify/Create
+## Files to Create/Modify
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `src/components/UndervaluedProperties.tsx` | Create | New component for undervalued property listings |
-| `src/pages/ChatWorkspace.tsx` | Modify | Add state and trigger logic for "undervalued" keyword |
+| `src/components/GenerateListing.tsx` | Create | Main component for listing generation workflow |
+| `src/pages/ChatWorkspace.tsx` | Modify | Add keyword detection and state for "generate listing" |
 
 ## Component Structure
 
-### Grid View Card Layout
-
 ```text
-+------------------------------------+
-|  [<] Image Carousel [>]            |
-|   +----------------------------+   |
-|   |                            |   |
-|   |      Property Image        |   |
-|   |                            |   |
-|   +----------------------------+   |
-|                                    |
-|  Area: 1276.49 sqm                 |
-|  Property Title - X units          |
-|  Full Address                      |
-|                                    |
-|  [Source] [Date] [Fresh data off]  |
-|                                    |
-|  4 500 000 USD                     |
-|  3 525 USD/sqm                     |
-|                                    |
-|  +--------------------------------+|
-|  | Key facts:                     ||
-|  | - Bullet point 1               ||
-|  | - Bullet point 2               ||
-|  | - Score X/10 (upside, risk)    ||
-|  +--------------------------------+|
-|                                    |
-|  [Schedule a Tour] [Details >]     |
-+------------------------------------+
-```
+GenerateListing
++------------------------------------------------------------+
+| Header (matches PropertyListing style)                      |
+| [Title: Generate Listing]  [Edit | Preview tabs]  [Status] |
++------------------------------------------------------------+
+|                                                             |
+| EDIT MODE:                                                  |
+| +----------------------------------------------------------+|
+| | Photo Gallery                                            ||
+| | [+Add] [img1] [img2] [img3] [img4] [img5]                ||
+| +----------------------------------------------------------+|
+|                                                             |
+| +----------------------------------------------------------+|
+| | Property Details Form                                    ||
+| | Title: [___________________________]                     ||
+| | Address: [___________________________]                   ||
+| | Price: [________] Type: [Dropdown]                       ||
+| | Beds: [__] Baths: [__] Sqft: [______]                    ||
+| | Description: [textarea]                                  ||
+| | Features: [tag input]                                    ||
+| +----------------------------------------------------------+|
+|                                                             |
+| PREVIEW MODE:                                               |
+| +----------------------------------------------------------+|
+| | Property Card Preview (styled like listing cards)        ||
+| | - Large hero image carousel                              ||
+| | - Title, address, price                                  ||
+| | - Specs (beds/baths/sqft)                                ||
+| | - Full description                                       ||
+| | - Feature badges                                         ||
+| +----------------------------------------------------------+|
+|                                                             |
++------------------------------------------------------------+
+| Footer                                                      |
+| [Save as Draft]              [List Property ▼]              |
++------------------------------------------------------------+
 
-### Map View Marker
-
-```text
-       +-----+
-       | TOP |
-       |  1  |
-       +-----+
-          |
-    +-----------+
-    | [icon]    |
-    | Address   |
-    | City      |
-    +-----------+
-    +---------------+
-    | 4 500 000 USD |
-    +---------------+
-```
-
-### Table View
-
-```text
-| # | Name                  | Address              | Price        | Area        | Price/sqft  | Beds  |
-|---|----------------------|---------------------|--------------|-------------|-------------|-------|
-| 1 | 400 Old Peytonsville | 400 Old Peyton...   | 7 000 000 USD| 324 522 sqft| 22 USD/sqft | Studio|
+Platform Selection Dialog (when clicking "List Property"):
++----------------------------------+
+| Select Platforms                 |
+| +------------------------------+ |
+| | [x] MLS                      | |
+| | [x] Zillow                   | |
+| | [x] Realtor.com              | |
+| | [x] Redfin                   | |
+| | [ ] Trulia                   | |
+| | [ ] Apartments.com           | |
+| | [ ] LoopNet                  | |
+| | [ ] Craigslist               | |
+| +------------------------------+ |
+| [Cancel]       [Publish to X]    |
++----------------------------------+
 ```
 
 ## Data Interface
 
 ```typescript
-interface UndervaluedProperty {
+interface GeneratedListing {
   id: string;
-  rank: number;
   title: string;
   address: string;
-  fullAddress: string;
   price: number;
-  pricePerSqft: number;
-  area: number;
-  areaUnit: "sqft" | "sqm";
-  units: number;
-  beds: string;
-  source: string;
-  listingDate: string;
-  freshData: boolean;
-  image: string | null;
-  keyFacts: string[];
-  score: number;
-  scoreUpside: string;
-  scoreRisk: string;
-  coordinates: { x: number; y: number };
+  type: "House" | "Condo" | "Townhouse" | "Apartment" | "Commercial";
+  beds: number;
+  baths: number;
+  sqft: number;
+  description: string;
+  features: string[];
+  images: string[];
+  status: "draft" | "ready" | "published";
+}
+
+interface Platform {
+  id: string;
+  name: string;
+  icon: string;
+  selected: boolean;
 }
 ```
 
 ## Implementation Details
 
-### Header Controls
+### Header Section
+- Title: "Generate Listing" with draft/ready status badge
+- Tabs: "Edit" and "Preview" to toggle between modes
+- Follows PropertyListing header styling (no PDF button, just tabs centered)
 
-- **Left**: PDF download button with icon
-- **Center**: View mode toggle (Grid/Map/Table) - pill-style buttons with active state
-- **Right**: Currency toggle (USD), Unit toggle (m2/sqft), Language toggle (EN)
+### Edit Mode Features
+- **Photo Gallery**: Horizontal scroll of uploaded images with add button
+  - Placeholder images from Unsplash for demo
+  - "+" button to add more (triggers file upload)
+  - Click to set as primary image
+- **Property Form**:
+  - Title input (pre-filled with AI-generated title if from prompt)
+  - Address input with map icon
+  - Price input with currency formatting
+  - Property type dropdown (House, Condo, etc.)
+  - Beds/Baths/Sqft number inputs
+  - Description textarea (rich text or plain)
+  - Features as tag input (add/remove badges)
 
-### Grid View Features
+### Preview Mode Features
+- Full property card preview matching existing listing card design
+- Large image carousel at top
+- All details formatted exactly as they would appear on platforms
+- "Ready to publish" indicator when all required fields are filled
 
-- Image carousel with left/right navigation arrows (or "No photo available" placeholder)
-- Property details: area, title with units, full address
-- Badges row: Source badge, Date badge, "Fresh data off/on" indicator
-- Price display with price per unit
-- Key facts section with light blue background containing bullet points
-- Action buttons: "Schedule a Tour" (primary blue), "Details >" (outline)
+### Platform Selection Dialog
+- Triggered by "List Property" button
+- Checkbox list of 8+ platforms with icons:
+  - MLS, Zillow, Realtor.com, Redfin, Trulia
+  - Apartments.com, LoopNet, CoStar, Craigslist
+- "Select All" / "Deselect All" quick actions
+- Shows count of selected platforms
+- "Publish to X platforms" button with confirmation
 
-### Map View Features
-
-- Full map background
-- Property markers with:
-  - Ranking badge ("TOP 1", "2", etc.) - orange for top, gray for others
-  - Building icon in circular marker
-  - Property name and location below
-  - Price badge in orange/blue pill
-- Marker popup on hover/click
-
-### Table View Features
-
-- Row numbers
-- Sortable columns (indicated by arrows on Price, Area, Price per square)
-- Columns: Name, Address, Price, Area, Price per square, Bedrooms
-- Clean, minimal styling matching reference
-
-### Styling Notes
-
-- Key facts box: Light blue background (`bg-blue-50` or similar)
-- Primary buttons: Solid blue
-- Source/Date badges: Rounded pills with subtle styling
-- Map markers: Orange/blue color scheme for rankings and prices
-- Full-bleed layout (no padding with container)
+### Footer Actions
+- "Save as Draft" button (outline style)
+- "List Property" button (primary style with dropdown arrow)
 
 ## ChatWorkspace Integration
 
-Add to existing keyword detection pattern:
+Add new keyword detection:
 
 ```typescript
-const UNDERVALUED_KEYWORDS = ["undervalued"];
+const GENERATE_LISTING_KEYWORDS = ["generate listing", "create listing", "new listing"];
 
-const [showUndervalued, setShowUndervalued] = useState(
-  UNDERVALUED_KEYWORDS.some(kw => lowerPrompt.includes(kw))
+const [showGenerateListing, setShowGenerateListing] = useState(
+  GENERATE_LISTING_KEYWORDS.some(kw => lowerPrompt.includes(kw))
 );
 ```
 
-Update `handleChatMessage` to detect "undervalued" keyword and toggle the view, resetting other panel states.
+Update `handleChatMessage` to detect "generate listing" and toggle the view.
 
-Update `renderRightPanel` to render `UndervaluedProperties` when `showUndervalued` is true.
+Update `renderRightPanel` to render `GenerateListing` component.
 
 ## Technical Notes
 
-- Component will be full-bleed without padding (container handles border/rounding)
-- Uses existing UI primitives: ScrollArea, Button, Badge, Table
-- New icons needed: FileDown (PDF), Building2, Camera (no photo placeholder)
-- Mock data with 6 sample undervalued properties
-- "No photo available" state for properties without images
+- Component is full-bleed (no internal padding, container handles borders)
+- Uses existing UI primitives: ScrollArea, Button, Badge, Input, Textarea, Select, Dialog, Checkbox
+- Form state managed with useState (no form library needed for this scope)
+- Mock data pre-populated for demonstration
+- Platform icons from Lucide (Building, Home, Store, etc.)
+- Toast notifications for save/publish actions using sonner
+
+## User Flow
+
+1. Agent types "generate listing" or property details in chat
+2. Right panel shows GenerateListing component in Edit mode
+3. Agent reviews/edits auto-populated fields (from prompt parsing)
+4. Agent uploads additional photos via gallery
+5. Agent switches to Preview to see formatted listing
+6. Agent clicks "List Property" to open platform dialog
+7. Agent selects target platforms
+8. Agent clicks "Publish" to complete the flow
+9. Success toast shows with platform count
+

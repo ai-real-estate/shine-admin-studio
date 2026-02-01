@@ -1,6 +1,7 @@
 import { Zap, FileText, Globe, GitBranch, Code, Bell, Settings, User, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useNavigate } from "react-router-dom";
 
 interface MiniSidebarProps {
   activeItem: string;
@@ -24,12 +25,17 @@ const bottomItems = [
 ];
 
 export function MiniSidebar({ activeItem, onItemClick, unreadCount = 0 }: MiniSidebarProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex h-screen w-16 flex-col items-center bg-background py-4">
       {/* Logo */}
-      <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-accent">
+      <button
+        onClick={() => navigate("/")}
+        className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-accent hover:opacity-80 transition-opacity cursor-pointer"
+      >
         <span className="text-lg font-bold text-accent-foreground">P</span>
-      </div>
+      </button>
 
       {/* Main Navigation */}
       <nav className="flex flex-1 flex-col items-center gap-1">

@@ -1,118 +1,148 @@
 
+# Property Valuation Component Implementation
 
-# Property Detail Dialog Implementation
-
-Add a dialog window that displays detailed property information when clicking on any property card, marker, or table row. The dialog design is inspired by the Zillow-style reference showing a photo gallery, property details, and action buttons.
+Create a new component for property valuation/estimation that displays detailed analysis including estimated price, rental value, property details, valuation report, income metrics, reviews, and similar properties. The component will be triggered by keywords "valuation", "valuate", "estimation", or "estimate" in the chat.
 
 ## Overview
 
-When a user clicks on a property in any view (Grid, Map, or Table), a dialog opens showing:
-- Photo gallery with main image and thumbnails
-- Property title with verification badge
-- Address
-- Feature tags (property type, beds, pet-friendly, amenities)
-- Action buttons (Schedule Tour, Apply Now)
-- Property specifications (beds, baths, sqft)
+Based on the reference screenshots, the Valuation component will include:
+
+1. **Estimation Section** - Two cards showing Estimated Price (with price per sqft) and Estimated Rent (12 months with ROI), each with action buttons
+2. **Property Section** - Address, construction year, floors, area, price, price per sqft with a map preview
+3. **About the Property** - Valuation report title and detailed market value analysis
+4. **Income-Driven Metrics** - Key operating assumptions, room revenue calculations, cap rates
+5. **Social Mentions & Reviews** - Table with source, author, date, sentiment, and quotes
+6. **Similar Properties** - Grid of comparable property cards with images, specs, and prices
 
 ## Files to Modify/Create
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `src/components/PropertyDetailDialog.tsx` | Create | New dialog component for property details |
-| `src/components/PropertyListing.tsx` | Modify | Add click handlers and dialog state |
+| `src/components/PropertyValuation.tsx` | Create | New valuation component matching reference design |
+| `src/pages/ChatWorkspace.tsx` | Modify | Add state and trigger logic for valuation keywords |
 
-## Component Design
-
-### PropertyDetailDialog Component
+## Component Structure
 
 ```text
-+--------------------------------------------------+
-|  [X]                                              |
-|  +------------------+  +-------+  +-------+       |
-|  |                  |  |  img  |  |  img  |       |
-|  |   Main Image     |  +-------+  +-------+       |
-|  |                  |  +-------+  +-------+       |
-|  |                  |  |  img  |  | See   |       |
-|  +------------------+  +-------+  | all   |       |
-|                                                   |
-|  Property Title  ✓                                |
-|  123 Address Street, City, ST 12345               |
-|                                                   |
-|  +--------+ +----------+ +---------+ +--------+   |
-|  | Type   | | Beds     | | Feature | | Feature|   |
-|  +--------+ +----------+ +---------+ +--------+   |
-|                                                   |
-|  +-------------------+  +--------------------+    |
-|  |   Schedule Tour   |  |    Apply Now       |    |
-|  +-------------------+  +--------------------+    |
-+--------------------------------------------------+
+PropertyValuation
++----------------------------------------------------------+
+|  Estimation                                               |
+|  Description text about market data and features          |
+|                                                           |
+|  +------------------------+  +-------------------------+  |
+|  | Estimated Price        |  | Estimated Rent (12 mo)  |  |
+|  | 9,503,759 USD          |  | 360,902 USD             |  |
+|  | 1,411 USD/sqft         |  | Rental ROI: 3.9%        |  |
+|  | [List for sale btn]    |  | [List for rent btn]     |  |
+|  +------------------------+  +-------------------------+  |
+|                                                           |
+|  Property                                                 |
+|  Address line                                             |
+|  +-------------------+-------------------+                |
+|  | Year of const.    | 1860              |  +----------+  |
+|  | Floors count      | 4                 |  |   Map    |  |
+|  | Area              | 6735 sqft         |  | Preview  |  |
+|  | Price             | 9,223,058 USD     |  +----------+  |
+|  | Price per sqft    | 1,369 USD/sqft    |                |
+|  +-------------------+-------------------+                |
+|                                                           |
+|  About the Property                                       |
+|  Key details and features                                 |
+|                                                           |
+|  Hotel - Commercial Valuation Report                      |
+|  1. Estimated Current Market Value (Freehold)             |
+|  - Low case / Central case / High case                    |
+|  - Assumptions list                                       |
+|                                                           |
+|  3. Income-Driven Metrics and Cap Rates                   |
+|  - Key operating assumptions                              |
+|  - Room revenue calculations                              |
+|  - EBITDA margin and cap rates                            |
+|                                                           |
+|  Social Mentions & Reviews (Table)                        |
+|  | Source | Author | Date | Sentiment | Quote |          |
+|                                                           |
+|  Similar Properties (Grid)                                |
+|  [Card 1] [Card 2] [Card 3]                               |
++----------------------------------------------------------+
 ```
-
-**Props:**
-- `property: Property | null` - The property to display (null when closed)
-- `open: boolean` - Whether dialog is open
-- `onOpenChange: (open: boolean) => void` - Callback for open state changes
-
-**Features:**
-- Photo gallery: Main large image + 4 thumbnail grid
-- "See all photos" button overlay on last thumbnail
-- Property title with green check badge
-- Address display
-- Feature tags using Badge components
-- Two action buttons: Schedule Tour (primary), Apply Now (outline)
-- Detailed specs section with icons
-
-### Property Interface Updates
-
-Add additional fields to the Property interface for the detail view:
-- `images: string[]` - Array of additional property images
-- `features: string[]` - Array of feature tags
-- `petFriendly: boolean`
-- `verified: boolean`
 
 ## Implementation Details
 
-### Dialog Sizing
-- Use a wider dialog: `max-w-4xl` to accommodate the photo gallery
-- Add `overflow-hidden` for proper image clipping
-- Use `ScrollArea` for content if needed
+### Mock Data Structure
 
-### Photo Gallery Layout
-- CSS Grid: Main image takes left 60%, thumbnail grid takes right 40%
-- 2x2 thumbnail grid
-- Last thumbnail has "See all X photos" overlay
+```typescript
+interface ValuationData {
+  estimatedPrice: number;
+  pricePerSqft: number;
+  estimatedRent: number;
+  rentalROI: number;
+  address: string;
+  yearBuilt: number;
+  floors: number;
+  area: number;
+  propertyName: string;
+  valuationReport: {
+    lowCase: string;
+    centralCase: string;
+    highCase: string;
+    assumptions: string[];
+  };
+  incomeMetrics: {
+    keys: number;
+    occupancy: string;
+    adr: string;
+    revPAR: string;
+    roomRevenue: string;
+    totalRevenue: string;
+    ebitdaMargin: string;
+    ebitda: string;
+    capRates: { low: string; central: string; high: string };
+  };
+  reviews: Array<{
+    source: string;
+    author: string;
+    date: string;
+    sentiment: string;
+    quote: string;
+  }>;
+  similarProperties: Array<{
+    id: string;
+    image: string;
+    beds: number;
+    baths: number;
+    sqft: number;
+    title: string;
+    address: string;
+    badge: string;
+    date: string;
+    price: number;
+    pricePerSqft: number;
+  }>;
+}
+```
 
-### Feature Tags
-Each feature displayed as a pill/badge with icon:
-- Building icon + property type
-- Bed icon + bed count
-- Paw icon + "Pet-friendly" (if applicable)
-- Additional amenity tags
+### Styling Approach
 
-### Click Handler Integration
-Update all three views to trigger the dialog:
-- **GridView**: Add onClick to the property card div
-- **MapView**: Add onClick to the marker div
-- **TableView**: Add onClick to the TableRow
+- Use `ScrollArea` for the full-height scrollable content
+- Estimation cards with border, padding, and button styling
+- Property details as a label-value list alongside a map placeholder
+- Valuation report as structured markdown-like sections
+- Reviews table using existing Table primitives
+- Similar properties grid with image cards
 
-### State Management
-Add to PropertyListing component:
-- `selectedProperty: Property | null` - Currently selected property
-- `dialogOpen: boolean` - Dialog visibility state
+### ChatWorkspace Integration
 
-## Technical Details
+Add new state variable `showValuation` and update both:
+1. Initial prompt detection for "valuation", "valuate", "estimation", "estimate"
+2. `handleChatMessage` function to detect these keywords and toggle the view
 
-### Icons Needed (from lucide-react)
-- `CheckCircle2` or `BadgeCheck` - Verification badge
-- `Building2` - Property type
-- `PawPrint` - Pet-friendly
-- `Wifi` - Amenities (example)
-- `Car` - Parking (example)
-- `WashingMachine` - Laundry (example)
-- `Heart` - Save/favorite button
-- `Share2` - Share button
-- `MoreHorizontal` - More options
+The component will render in the right panel, replacing the preview (same pattern as PropertyListing).
 
-### Mock Data Enhancement
-Add gallery images and features to each mock property for a richer detail view.
+## Technical Notes
 
+- Component will be full-bleed without padding (container handles border/rounding)
+- Uses existing UI primitives: ScrollArea, Button, Badge, Table
+- Map placeholder uses the same grid background pattern as PropertyListing's MapView
+- Currency formatting follows existing `formatPrice` pattern
+- "Get more data" buttons use primary variant, "Details" use outline

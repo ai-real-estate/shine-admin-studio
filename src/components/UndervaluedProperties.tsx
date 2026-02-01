@@ -21,6 +21,7 @@ import {
   Camera,
   ArrowUpDown,
 } from "lucide-react";
+import { PropertyDetailDialog } from "./PropertyDetailDialog";
 
 interface UndervaluedProperty {
   id: string;
@@ -218,10 +219,40 @@ const formatArea = (area: number, unit: "sqft" | "sqm") => {
   }).format(area)} ${unit}`;
 };
 
+// Convert UndervaluedProperty to PropertyDetailDialog format
+const convertToDetailProperty = (property: UndervaluedProperty) => ({
+  id: property.id,
+  title: property.title,
+  address: property.fullAddress,
+  price: property.price,
+  type: property.beds === "N/A" ? "Commercial" : "Residential",
+  beds: property.beds === "N/A" ? 0 : parseInt(property.beds) || 1,
+  baths: Math.ceil((property.beds === "N/A" ? 0 : parseInt(property.beds) || 1) / 2) + 1,
+  sqft: property.areaUnit === "sqft" ? Math.round(property.area) : Math.round(property.area * 10.764),
+  image: property.image || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
+  images: [
+    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800",
+    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800",
+    "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800",
+    "https://images.unsplash.com/photo-1497215842964-222b430dc094?w=800",
+  ],
+  features: property.keyFacts.slice(0, 2),
+  petFriendly: false,
+  verified: property.freshData,
+  coordinates: property.coordinates,
+});
+
 export const UndervaluedProperties = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [currency] = useState("USD");
   const [areaUnit] = useState<"sqm" | "sqft">("sqm");
+  const [selectedProperty, setSelectedProperty] = useState<UndervaluedProperty | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handlePropertyClick = (property: UndervaluedProperty) => {
+    setSelectedProperty(property);
+    setDialogOpen(true);
+  };
 
   const renderHeader = () => (
     <div className="flex items-center justify-between p-4 border-b border-border/50">
@@ -280,7 +311,8 @@ export const UndervaluedProperties = () => {
   const renderPropertyCard = (property: UndervaluedProperty) => (
     <div
       key={property.id}
-      className="border border-border/50 rounded-xl bg-card overflow-hidden"
+      className="border border-border/50 rounded-xl bg-card overflow-hidden cursor-pointer transition-shadow hover:shadow-lg"
+      onClick={() => handlePropertyClick(property)}
     >
       {/* Image Carousel */}
       <div className="relative aspect-[16/10] bg-muted">
@@ -368,10 +400,18 @@ export const UndervaluedProperties = () => {
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
-          <Button className="flex-1" size="sm">
+          <Button className="flex-1" size="sm" onClick={(e) => e.stopPropagation()}>
             Schedule a Tour
           </Button>
-          <Button variant="outline" size="sm" className="gap-1">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePropertyClick(property);
+            }}
+          >
             Details
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -404,11 +444,12 @@ export const UndervaluedProperties = () => {
       {mockProperties.map((property) => (
         <div
           key={property.id}
-          className="absolute transform -translate-x-1/2"
+          className="absolute transform -translate-x-1/2 cursor-pointer"
           style={{
             left: `${property.coordinates.x}%`,
             top: `${property.coordinates.y}%`,
           }}
+          onClick={() => handlePropertyClick(property)}
         >
           {/* Rank Badge */}
           <div
@@ -492,7 +533,11 @@ export const UndervaluedProperties = () => {
         </TableHeader>
         <TableBody>
           {mockProperties.map((property) => (
-            <TableRow key={property.id} className="cursor-pointer hover:bg-muted/50">
+            <TableRow 
+              key={property.id} 
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => handlePropertyClick(property)}
+            >
               <TableCell className="font-medium">{property.rank}</TableCell>
               <TableCell className="font-medium">{property.title}</TableCell>
               <TableCell className="text-muted-foreground max-w-[200px] truncate">
@@ -521,6 +566,12 @@ export const UndervaluedProperties = () => {
         {viewMode === "map" && renderMapView()}
         {viewMode === "table" && renderTableView()}
       </ScrollArea>
+      
+      <PropertyDetailDialog
+        property={selectedProperty ? convertToDetailProperty(selectedProperty) : null}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 };

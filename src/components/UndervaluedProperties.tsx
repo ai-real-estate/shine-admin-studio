@@ -343,13 +343,6 @@ export const UndervaluedProperties = () => {
             <span className="text-sm">No photo available</span>
           </div>
         )}
-        {/* Carousel Controls */}
-        <button className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-background/80 rounded-full flex items-center justify-center hover:bg-background transition-colors">
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-        <button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-background/80 rounded-full flex items-center justify-center hover:bg-background transition-colors">
-          <ChevronRight className="h-4 w-4" />
-        </button>
       </div>
 
       {/* Content */}

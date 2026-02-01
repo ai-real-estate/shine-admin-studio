@@ -1,180 +1,158 @@
 
 
-# Generate Listing Component Implementation
+# Connect Platforms Page Implementation
 
-Create a new component for property listing generation that allows agents to create and publish property listings across multiple platforms. The component will be triggered by "generate listing" keyword and displayed in the right chat section.
+Create a new dedicated page for managing platform integrations where agents can connect, configure, and monitor their listing platform accounts. This page will be accessible from the side menu.
 
 ## Overview
 
-The GenerateListing component provides a workflow for agents to:
-1. Review/edit auto-generated listing content (from chat input or uploaded photos)
-2. Preview the formatted listing with all details
-3. Select target platforms and publish the listing
+The Connect Platforms page allows agents to:
+1. View all available listing platforms with connection status
+2. Connect/disconnect platform accounts via OAuth or API key
+3. Monitor sync status and manage platform settings
+4. See connected platforms at a glance
 
 ## Files to Create/Modify
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `src/components/GenerateListing.tsx` | Create | Main component for listing generation workflow |
-| `src/pages/ChatWorkspace.tsx` | Modify | Add keyword detection and state for "generate listing" |
+| `src/pages/ConnectPlatforms.tsx` | Create | Main page for platform integrations |
+| `src/components/MiniSidebar.tsx` | Modify | Add "Platforms" nav item |
+| `src/pages/Index.tsx` | Modify | Add navigation handler for platforms |
+| `src/pages/ChatWorkspace.tsx` | Modify | Add navigation handler for platforms |
+| `src/App.tsx` | Modify | Add route for /platforms |
+
+## Platform List
+
+The page will include the following platforms as requested:
+- MLS
+- Zillow
+- Realtor.com
+- Redfin
+- Bayut (UAE)
+- PropertyFinder (Middle East)
+- Idealista (Spain/Europe)
+- Lun (Ukraine)
 
 ## Component Structure
 
 ```text
-GenerateListing
+ConnectPlatforms Page
 +------------------------------------------------------------+
-| Header (matches PropertyListing style)                      |
-| [Title: Generate Listing]  [Edit | Preview tabs]  [Status] |
+| Header                                                      |
+| [Share2 Icon] Connect Platforms     [Search] [Filter ▼]    |
 +------------------------------------------------------------+
 |                                                             |
-| EDIT MODE:                                                  |
+| Connected (X)                                               |
 | +----------------------------------------------------------+|
-| | Photo Gallery                                            ||
-| | [+Add] [img1] [img2] [img3] [img4] [img5]                ||
+| | [MLS Logo]  MLS                      [Connected] [•••]  ||
+| | Last synced: 2 min ago                                  ||
 | +----------------------------------------------------------+|
-|                                                             |
-| +----------------------------------------------------------+|
-| | Property Details Form                                    ||
-| | Title: [___________________________]                     ||
-| | Address: [___________________________]                   ||
-| | Price: [________] Type: [Dropdown]                       ||
-| | Beds: [__] Baths: [__] Sqft: [______]                    ||
-| | Description: [textarea]                                  ||
-| | Features: [tag input]                                    ||
+| | [Zillow Logo]  Zillow                [Connected] [•••]  ||
+| | Last synced: 5 min ago                                  ||
 | +----------------------------------------------------------+|
 |                                                             |
-| PREVIEW MODE:                                               |
+| Available (X)                                               |
 | +----------------------------------------------------------+|
-| | Property Card Preview (styled like listing cards)        ||
-| | - Large hero image carousel                              ||
-| | - Title, address, price                                  ||
-| | - Specs (beds/baths/sqft)                                ||
-| | - Full description                                       ||
-| | - Feature badges                                         ||
+| | [Realtor Logo]  Realtor.com          [Connect]          ||
+| | List properties on America's #1 site                    ||
+| +----------------------------------------------------------+|
+| | [Redfin Logo]  Redfin                [Connect]          ||
+| | Reach tech-savvy home buyers                            ||
+| +----------------------------------------------------------+|
+| | [Bayut Logo]  Bayut                  [Connect]          ||
+| | UAE's leading property portal                           ||
+| +----------------------------------------------------------+|
+| | [PropertyFinder Logo]  PropertyFinder [Connect]         ||
+| | Middle East's property marketplace                      ||
+| +----------------------------------------------------------+|
+| | [Idealista Logo]  Idealista          [Connect]          ||
+| | Spain & Portugal's real estate leader                   ||
+| +----------------------------------------------------------+|
+| | [Lun Logo]  Lun                      [Connect]          ||
+| | Ukraine's property platform                             ||
 | +----------------------------------------------------------+|
 |                                                             |
 +------------------------------------------------------------+
-| Footer                                                      |
-| [Save as Draft]              [List Property ▼]              |
-+------------------------------------------------------------+
-
-Platform Selection Dialog (when clicking "List Property"):
-+----------------------------------+
-| Select Platforms                 |
-| +------------------------------+ |
-| | [x] MLS                      | |
-| | [x] Zillow                   | |
-| | [x] Realtor.com              | |
-| | [x] Redfin                   | |
-| | [ ] Trulia                   | |
-| | [ ] Apartments.com           | |
-| | [ ] LoopNet                  | |
-| | [ ] Craigslist               | |
-| +------------------------------+ |
-| [Cancel]       [Publish to X]    |
-+----------------------------------+
 ```
 
 ## Data Interface
 
 ```typescript
-interface GeneratedListing {
-  id: string;
-  title: string;
-  address: string;
-  price: number;
-  type: "House" | "Condo" | "Townhouse" | "Apartment" | "Commercial";
-  beds: number;
-  baths: number;
-  sqft: number;
-  description: string;
-  features: string[];
-  images: string[];
-  status: "draft" | "ready" | "published";
-}
-
 interface Platform {
   id: string;
   name: string;
-  icon: string;
-  selected: boolean;
+  description: string;
+  icon: React.ReactNode;
+  connected: boolean;
+  lastSync?: string;
+  region?: string;
 }
 ```
 
 ## Implementation Details
 
+### Page Layout
+- Full-page layout matching Notifications page style
+- MiniSidebar on left, main content area with rounded border
+- Radial gradient background matching existing pages
+
 ### Header Section
-- Title: "Generate Listing" with draft/ready status badge
-- Tabs: "Edit" and "Preview" to toggle between modes
-- Follows PropertyListing header styling (no PDF button, just tabs centered)
+- Title "Connect Platforms" with Share2 icon
+- Search input to filter platforms by name
+- Filter dropdown for region (All, North America, Europe, Middle East, etc.)
 
-### Edit Mode Features
-- **Photo Gallery**: Horizontal scroll of uploaded images with add button
-  - Placeholder images from Unsplash for demo
-  - "+" button to add more (triggers file upload)
-  - Click to set as primary image
-- **Property Form**:
-  - Title input (pre-filled with AI-generated title if from prompt)
-  - Address input with map icon
-  - Price input with currency formatting
-  - Property type dropdown (House, Condo, etc.)
-  - Beds/Baths/Sqft number inputs
-  - Description textarea (rich text or plain)
-  - Features as tag input (add/remove badges)
+### Platform Cards
+- Two sections: "Connected" and "Available"
+- Each card shows:
+  - Platform icon (using Lucide icons or custom SVGs)
+  - Platform name and description
+  - Connection status badge
+  - Action button (Connect/Manage)
+  - For connected: last sync time and dropdown menu (Sync Now, Settings, Disconnect)
 
-### Preview Mode Features
-- Full property card preview matching existing listing card design
-- Large image carousel at top
-- All details formatted exactly as they would appear on platforms
-- "Ready to publish" indicator when all required fields are filled
+### Connect Dialog
+- Modal dialog triggered by "Connect" button
+- Shows platform-specific connection options:
+  - OAuth flow button ("Sign in with [Platform]")
+  - Or API key input for platforms that use keys
+- Connection instructions and help link
 
-### Platform Selection Dialog
-- Triggered by "List Property" button
-- Checkbox list of 8+ platforms with icons:
-  - MLS, Zillow, Realtor.com, Redfin, Trulia
-  - Apartments.com, LoopNet, CoStar, Craigslist
-- "Select All" / "Deselect All" quick actions
-- Shows count of selected platforms
-- "Publish to X platforms" button with confirmation
+### Platform Actions Menu (for connected)
+- "Sync Now" - trigger manual sync
+- "Settings" - open platform-specific settings
+- "Disconnect" - disconnect with confirmation
 
-### Footer Actions
-- "Save as Draft" button (outline style)
-- "List Property" button (primary style with dropdown arrow)
+## Sidebar Integration
 
-## ChatWorkspace Integration
-
-Add new keyword detection:
+Add new navigation item to MiniSidebar:
 
 ```typescript
-const GENERATE_LISTING_KEYWORDS = ["generate listing", "create listing", "new listing"];
-
-const [showGenerateListing, setShowGenerateListing] = useState(
-  GENERATE_LISTING_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-);
+const navItems = [
+  { id: "api", icon: Zap, label: "API" },
+  { id: "documents", icon: FileText, label: "Documents" },
+  { id: "web", icon: Globe, label: "Web" },
+  { id: "sources", icon: GitBranch, label: "Sources" },
+  { id: "code", icon: Code, label: "Code" },
+  { id: "platforms", icon: Share2, label: "Platforms" },  // NEW
+];
 ```
-
-Update `handleChatMessage` to detect "generate listing" and toggle the view.
-
-Update `renderRightPanel` to render `GenerateListing` component.
 
 ## Technical Notes
 
-- Component is full-bleed (no internal padding, container handles borders)
-- Uses existing UI primitives: ScrollArea, Button, Badge, Input, Textarea, Select, Dialog, Checkbox
-- Form state managed with useState (no form library needed for this scope)
-- Mock data pre-populated for demonstration
-- Platform icons from Lucide (Building, Home, Store, etc.)
-- Toast notifications for save/publish actions using sonner
+- Uses existing UI components: Card, Button, Badge, Dialog, Input, DropdownMenu
+- Platform state managed with useState (mock data for demo)
+- Toast notifications for connect/disconnect/sync actions
+- Mobile-responsive design with stacked cards on small screens
+- Search and filter functionality built-in
 
 ## User Flow
 
-1. Agent types "generate listing" or property details in chat
-2. Right panel shows GenerateListing component in Edit mode
-3. Agent reviews/edits auto-populated fields (from prompt parsing)
-4. Agent uploads additional photos via gallery
-5. Agent switches to Preview to see formatted listing
-6. Agent clicks "List Property" to open platform dialog
-7. Agent selects target platforms
-8. Agent clicks "Publish" to complete the flow
-9. Success toast shows with platform count
+1. Agent clicks "Platforms" in sidebar
+2. Navigates to /platforms page
+3. Views list of all platforms grouped by connection status
+4. Clicks "Connect" on available platform
+5. Completes OAuth or API key entry in dialog
+6. Platform moves to "Connected" section
+7. Can manage connected platforms via dropdown menu
 

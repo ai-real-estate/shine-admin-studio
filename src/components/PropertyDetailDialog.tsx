@@ -4,6 +4,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   BadgeCheck,
   Building2,
@@ -66,7 +67,8 @@ export function PropertyDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl overflow-hidden p-0">
+      <DialogContent className="max-w-4xl overflow-hidden p-0 max-h-[90vh]">
+        <ScrollArea className="max-h-[90vh]">
         {/* Photo Gallery */}
         <div className="grid grid-cols-3 gap-1 p-1">
           {/* Main Image */}
@@ -180,6 +182,7 @@ export function PropertyDetailDialog({
             </Button>
           </div>
         </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

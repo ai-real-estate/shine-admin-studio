@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MiniSidebar } from "@/components/MiniSidebar";
 import { SettingsPanel } from "@/components/SettingsPanel";
-import { LoginCard } from "@/components/LoginCard";
 
 const Index = () => {
   const [activeItem, setActiveItem] = useState("api");
@@ -48,7 +47,7 @@ const Index = () => {
             boxShadow: '0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)'
           }}
         >
-          <LoginCard />
+          <p className="text-muted-foreground">Main content area</p>
         </div>
       </main>
     </div>

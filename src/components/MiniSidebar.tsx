@@ -10,11 +10,11 @@ interface MiniSidebarProps {
 }
 
 const navItems = [
-  { id: "api", icon: Zap, label: "API" },
-  { id: "documents", icon: FileText, label: "Documents" },
   { id: "web", icon: Globe, label: "Web" },
-  { id: "sources", icon: GitBranch, label: "Sources" },
-  { id: "code", icon: Code, label: "Code" },
+  { id: "documents", icon: FileText, label: "Documents" },
+  // { id: "sources", icon: GitBranch, label: "Sources" },
+  // { id: "code", icon: Code, label: "Code" },
+  { id: "api", icon: Zap, label: "API" },
   { id: "platforms", icon: Share2, label: "Platforms" },
 ];
 

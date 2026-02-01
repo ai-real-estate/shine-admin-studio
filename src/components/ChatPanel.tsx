@@ -92,7 +92,7 @@ export function ChatPanel({ initialPrompt, onMessage }: ChatPanelProps) {
             >
               <div
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
+                  "max-w-[80%] rounded-lg px-4 py-2.5 text-sm",
                   message.role === 'user'
                     ? "bg-foreground text-background"
                     : "bg-muted text-foreground"

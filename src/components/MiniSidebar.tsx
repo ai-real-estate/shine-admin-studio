@@ -1,4 +1,4 @@
-import { Zap, FileText, Globe, GitBranch, Code, Bell, Settings, User } from "lucide-react";
+import { Zap, FileText, Globe, GitBranch, Code, Bell, Settings, User, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -14,6 +14,7 @@ const navItems = [
   { id: "web", icon: Globe, label: "Web" },
   { id: "sources", icon: GitBranch, label: "Sources" },
   { id: "code", icon: Code, label: "Code" },
+  { id: "platforms", icon: Share2, label: "Platforms" },
 ];
 
 const bottomItems = [

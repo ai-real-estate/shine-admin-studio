@@ -47,6 +47,10 @@ const ChatWorkspace = () => {
       navigate("/notifications");
       return;
     }
+    if (item === "platforms") {
+      navigate("/platforms");
+      return;
+    }
     if (item === "settings") {
       setSettingsOpen(true);
     } else {

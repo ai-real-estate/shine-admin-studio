@@ -131,7 +131,7 @@ export function PropertyListing() {
             {mockProperties.length} listings found
           </p>
         </div>
-        <div className="flex items-center rounded-lg border border-border bg-card p-1">
+        <div className="flex items-center rounded-lg border border-border bg-card p-1 gap-1">
           <Button
             variant="ghost"
             size="sm"

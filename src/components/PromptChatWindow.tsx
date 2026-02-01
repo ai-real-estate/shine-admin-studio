@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -14,11 +14,54 @@ interface PromptChatWindowProps {
   onSubmit?: (prompt: string) => void;
 }
 
+interface HintChip {
+  label: string;
+  basePrompt: string;
+  locations?: string[];
+}
+
+const HINT_CHIPS: HintChip[] = [
+  { 
+    label: "Find Property", 
+    basePrompt: "Find 1 bedroom property in Dubai ",
+    locations: ["Downtown", "Marina", "Creek Harbour"]
+  },
+  { label: "Property valuation", basePrompt: "Property valuation" },
+  { label: "Undervalued", basePrompt: "Find undervalued properties" },
+  { label: "Generate listing", basePrompt: "Generate listing" },
+  { 
+    label: "Avg rent", 
+    basePrompt: "Avg rent ",
+    locations: ["Miami", "London", "Tokio"]
+  },
+  { 
+    label: "Rental analytics", 
+    basePrompt: "Rental analytics in ",
+    locations: ["Kyiv", "Paris", "Warsaw", "Berlin"]
+  },
+  { 
+    label: "Find distress", 
+    basePrompt: "Find distress ",
+    locations: ["Abu Dhabi", "Sydney", "Barcelona"]
+  },
+];
+
 export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWindowProps) => {
   const [prompt, setPrompt] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        clearTimeout(animationRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = () => {
-    if (prompt.trim() && onSubmit) {
+    if (prompt.trim() && onSubmit && !isAnimating) {
       onSubmit(prompt);
       setPrompt("");
     }
@@ -29,6 +72,97 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
       e.preventDefault();
       handleSubmit();
     }
+  };
+
+  const typeText = (text: string, currentIndex: number, callback: () => void) => {
+    if (currentIndex <= text.length) {
+      setPrompt(text.substring(0, currentIndex));
+      animationRef.current = setTimeout(() => {
+        typeText(text, currentIndex + 1, callback);
+      }, 50);
+    } else {
+      callback();
+    }
+  };
+
+  const untypeText = (text: string, baseLength: number, callback: () => void) => {
+    const currentLength = text.length;
+    if (currentLength > baseLength) {
+      setPrompt(text.substring(0, currentLength - 1));
+      animationRef.current = setTimeout(() => {
+        untypeText(text.substring(0, currentLength - 1), baseLength, callback);
+      }, 30);
+    } else {
+      callback();
+    }
+  };
+
+  const animateLocations = (basePrompt: string, locations: string[], locationIndex: number) => {
+    if (locationIndex >= locations.length) {
+      // Cycle back to first location
+      animationRef.current = setTimeout(() => {
+        untypeText(basePrompt + locations[locations.length - 1], basePrompt.length, () => {
+          animateLocations(basePrompt, locations, 0);
+        });
+      }, 3000);
+      return;
+    }
+
+    const fullText = basePrompt + locations[locationIndex];
+    
+    typeText(fullText, basePrompt.length, () => {
+      animationRef.current = setTimeout(() => {
+        if (locationIndex < locations.length - 1) {
+          untypeText(fullText, basePrompt.length, () => {
+            animationRef.current = setTimeout(() => {
+              animateLocations(basePrompt, locations, locationIndex + 1);
+            }, 500);
+          });
+        } else {
+          // After last location, wait then start cycle again
+          animationRef.current = setTimeout(() => {
+            untypeText(fullText, basePrompt.length, () => {
+              animationRef.current = setTimeout(() => {
+                animateLocations(basePrompt, locations, 0);
+              }, 500);
+            });
+          }, 3000);
+        }
+      }, 3000);
+    });
+  };
+
+  const handleChipClick = (chip: HintChip) => {
+    // Stop any current animation
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+    }
+    
+    setIsAnimating(true);
+    setPrompt("");
+    
+    if (chip.locations && chip.locations.length > 0) {
+      // Type base prompt first, then animate locations
+      typeText(chip.basePrompt, 0, () => {
+        animateLocations(chip.basePrompt, chip.locations!, 0);
+      });
+    } else {
+      // Just type the base prompt
+      typeText(chip.basePrompt, 0, () => {
+        setIsAnimating(false);
+      });
+    }
+    
+    textareaRef.current?.focus();
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // If user starts typing, stop animation
+    if (animationRef.current) {
+      clearTimeout(animationRef.current);
+      setIsAnimating(false);
+    }
+    setPrompt(e.target.value);
   };
 
   return (
@@ -42,8 +176,9 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
       <div className="w-full rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
         {/* Textarea */}
         <Textarea
+          ref={textareaRef}
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
+          onChange={handleTextareaChange}
           onKeyDown={handleKeyDown}
           placeholder="Ask to create a dashboard to..."
           className="border-0 bg-transparent resize-none min-h-[100px] focus-visible:ring-0 focus-visible:ring-offset-0 text-base px-4 py-4"
@@ -92,12 +227,25 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
               size="icon-sm" 
               className="rounded-full bg-foreground text-background hover:bg-foreground/90"
               onClick={handleSubmit}
-              disabled={!prompt.trim()}
+              disabled={!prompt.trim() || isAnimating}
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Hint Chips */}
+      <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+        {HINT_CHIPS.map((chip) => (
+          <button
+            key={chip.label}
+            onClick={() => handleChipClick(chip)}
+            className="px-3 py-1.5 text-sm rounded-full border border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-card hover:border-foreground/20 transition-all duration-200"
+          >
+            {chip.label}
+          </button>
+        ))}
       </div>
     </div>
   );

@@ -62,7 +62,7 @@ const mockProperties: UndervaluedProperty[] = [
     source: "MLS",
     listingDate: "Jan 15, 2026",
     freshData: false,
-    image: null,
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
     keyFacts: [
       "Prime location near downtown",
       "Recent renovations completed",
@@ -88,7 +88,7 @@ const mockProperties: UndervaluedProperty[] = [
     source: "LoopNet",
     listingDate: "Dec 28, 2025",
     freshData: true,
-    image: null,
+    image: "https://images.unsplash.com/photo-1554435493-93422e8220c8?w=800&q=80",
     keyFacts: [
       "Class A office space",
       "95% occupancy rate",
@@ -114,7 +114,7 @@ const mockProperties: UndervaluedProperty[] = [
     source: "Zillow",
     listingDate: "Jan 10, 2026",
     freshData: true,
-    image: null,
+    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
     keyFacts: [
       "Ground floor retail space",
       "Residential units above",
@@ -140,7 +140,7 @@ const mockProperties: UndervaluedProperty[] = [
     source: "CoStar",
     listingDate: "Jan 5, 2026",
     freshData: false,
-    image: null,
+    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80",
     keyFacts: [
       "High ceiling clearance",
       "Loading docks available",
@@ -166,7 +166,7 @@ const mockProperties: UndervaluedProperty[] = [
     source: "Crexi",
     listingDate: "Dec 20, 2025",
     freshData: true,
-    image: null,
+    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80",
     keyFacts: [
       "Anchor tenant signed",
       "High traffic location",
@@ -192,7 +192,7 @@ const mockProperties: UndervaluedProperty[] = [
     source: "Apartments.com",
     listingDate: "Jan 12, 2026",
     freshData: false,
-    image: null,
+    image: "https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=800&q=80",
     keyFacts: [
       "Strong rental demand",
       "Recently updated units",

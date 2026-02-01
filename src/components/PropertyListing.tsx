@@ -271,7 +271,7 @@ function MapView({ properties }: { properties: Property[] }) {
 
 function TableView({ properties }: { properties: Property[] }) {
   return (
-    <div className="p-6">
+    <div>
       <Table>
         <TableHeader>
           <TableRow>

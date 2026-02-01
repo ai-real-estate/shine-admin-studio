@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -100,6 +100,8 @@ export const GenerateListing = () => {
   const [platformDialogOpen, setPlatformDialogOpen] = useState(false);
   const [newFeature, setNewFeature] = useState("");
   const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedPlatformCount = platforms.filter((p) => p.selected).length;
 
@@ -115,6 +117,63 @@ export const GenerateListing = () => {
       }));
       setNewFeature("");
     }
+  };
+
+  const handleImageUpload = useCallback((files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    
+    const newImages: string[] = [];
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith("image/")) {
+        const url = URL.createObjectURL(file);
+        newImages.push(url);
+      }
+    });
+    
+    if (newImages.length > 0) {
+      setListing((prev) => ({
+        ...prev,
+        images: [...prev.images, ...newImages],
+      }));
+      toast.success(`${newImages.length} image${newImages.length > 1 ? "s" : ""} added`);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    handleImageUpload(e.dataTransfer.files);
+  }, [handleImageUpload]);
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleImageUpload(e.target.files);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setListing((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
+    }));
+    if (primaryImageIndex >= index && primaryImageIndex > 0) {
+      setPrimaryImageIndex(primaryImageIndex - 1);
+    }
+    toast.success("Image removed");
   };
 
   const handleRemoveFeature = (feature: string) => {
@@ -200,36 +259,82 @@ export const GenerateListing = () => {
   );
 
   const renderPhotoGallery = () => (
-    <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border/50">
-      <h3 className="text-sm font-medium text-foreground mb-3">Photos</h3>
+    <div 
+      className={cn(
+        "px-4 sm:px-6 py-3 sm:py-4 border-b border-border/50 transition-colors",
+        isDragging && "bg-primary/5 border-primary/30"
+      )}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-medium text-foreground">Photos</h3>
+        {isDragging && (
+          <span className="text-xs text-primary animate-pulse">Drop images here</span>
+        )}
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleFileInputChange}
+        className="hidden"
+      />
       <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-4 sm:mx-0 px-4 sm:px-0">
-        <button className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/50 transition-colors flex items-center justify-center">
+        <button 
+          onClick={() => fileInputRef.current?.click()}
+          className={cn(
+            "flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-dashed transition-colors flex flex-col items-center justify-center gap-1",
+            isDragging 
+              ? "border-primary bg-primary/10" 
+              : "border-border hover:border-primary/50 hover:bg-muted/50"
+          )}
+        >
           <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground">Add</span>
         </button>
         {listing.images.map((image, index) => (
-          <button
+          <div
             key={index}
-            onClick={() => setPrimaryImageIndex(index)}
             className={cn(
-              "relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 transition-colors",
+              "relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 transition-colors group",
               primaryImageIndex === index
                 ? "border-primary"
                 : "border-transparent hover:border-border"
             )}
           >
-            <img
-              src={image}
-              alt={`Property ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
+            <button
+              onClick={() => setPrimaryImageIndex(index)}
+              className="w-full h-full"
+            >
+              <img
+                src={image}
+                alt={`Property ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </button>
             {primaryImageIndex === index && (
               <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded">
                 Primary
               </div>
             )}
-          </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemoveImage(index);
+              }}
+              className="absolute top-1 right-1 bg-destructive/90 text-destructive-foreground p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
         ))}
       </div>
+      <p className="text-xs text-muted-foreground mt-2">
+        Click to upload or drag and drop images
+      </p>
     </div>
   );
 

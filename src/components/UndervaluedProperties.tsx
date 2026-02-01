@@ -312,14 +312,14 @@ export const UndervaluedProperties = () => {
       </div>
 
       {/* Right - Currency/Unit Toggles */}
-      <div className="flex items-center gap-2">
+      {/* <div className="flex items-center gap-2">
         <Badge variant="secondary" className="cursor-pointer">
           {currency}
         </Badge>
         <Badge variant="secondary" className="cursor-pointer">
           {areaUnit === "sqm" ? "m²" : "sqft"}
         </Badge>
-      </div>
+      </div> */}
     </div>
   );
 

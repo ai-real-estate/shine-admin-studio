@@ -126,7 +126,7 @@ export function PropertyListing() {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Properties</h1>
+          <h1 className="text-md font-semibold text-foreground">Properties</h1>
           <p className="text-sm text-muted-foreground">
             {mockProperties.length} listings found
           </p>

@@ -518,7 +518,7 @@ export const UndervaluedProperties = () => {
   );
 
   const renderTableView = () => (
-    <div className="p-4">
+    <div className="">
       <Table>
         <TableHeader>
           <TableRow>

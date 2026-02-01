@@ -161,23 +161,23 @@ export const GenerateListing = () => {
   };
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/50">
       <div className="flex items-center gap-3">
-        <h2 className="text-lg font-semibold text-foreground">Generate Listing</h2>
+        <h2 className="text-base sm:text-lg font-semibold text-foreground">Generate Listing</h2>
         <Badge
           variant={listing.status === "published" ? "default" : "secondary"}
-          className="capitalize"
+          className="capitalize text-xs"
         >
           {listing.status}
         </Badge>
       </div>
 
-      <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+      <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-full sm:w-auto">
         <Button
           variant="ghost"
           size="sm"
           className={cn(
-            "px-4 h-8",
+            "flex-1 sm:flex-none px-4 h-8 text-sm",
             activeTab === "edit" && "bg-background shadow-sm"
           )}
           onClick={() => setActiveTab("edit")}
@@ -188,7 +188,7 @@ export const GenerateListing = () => {
           variant="ghost"
           size="sm"
           className={cn(
-            "px-4 h-8",
+            "flex-1 sm:flex-none px-4 h-8 text-sm",
             activeTab === "preview" && "bg-background shadow-sm"
           )}
           onClick={() => setActiveTab("preview")}
@@ -200,18 +200,18 @@ export const GenerateListing = () => {
   );
 
   const renderPhotoGallery = () => (
-    <div className="px-6 py-4 border-b border-border/50">
+    <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border/50">
       <h3 className="text-sm font-medium text-foreground mb-3">Photos</h3>
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        <button className="flex-shrink-0 w-24 h-24 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/50 transition-colors flex items-center justify-center">
-          <Plus className="h-6 w-6 text-muted-foreground" />
+      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-4 sm:mx-0 px-4 sm:px-0">
+        <button className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/50 transition-colors flex items-center justify-center">
+          <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
         </button>
         {listing.images.map((image, index) => (
           <button
             key={index}
             onClick={() => setPrimaryImageIndex(index)}
             className={cn(
-              "relative flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden border-2 transition-colors",
+              "relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border-2 transition-colors",
               primaryImageIndex === index
                 ? "border-primary"
                 : "border-transparent hover:border-border"
@@ -223,7 +223,7 @@ export const GenerateListing = () => {
               className="w-full h-full object-cover"
             />
             {primaryImageIndex === index && (
-              <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded">
+              <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded">
                 Primary
               </div>
             )}
@@ -234,7 +234,7 @@ export const GenerateListing = () => {
   );
 
   const renderEditForm = () => (
-    <div className="px-6 py-4 space-y-4">
+    <div className="px-4 sm:px-6 py-3 sm:py-4 space-y-4">
       <div>
         <label className="text-sm font-medium text-foreground">Title</label>
         <Input
@@ -258,7 +258,7 @@ export const GenerateListing = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div>
           <label className="text-sm font-medium text-foreground">Price</label>
           <Input
@@ -289,10 +289,10 @@ export const GenerateListing = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         <div>
-          <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
-            <Bed className="h-3.5 w-3.5" /> Beds
+          <label className="text-xs sm:text-sm font-medium text-foreground flex items-center gap-1 sm:gap-1.5">
+            <Bed className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> Beds
           </label>
           <Input
             type="number"
@@ -303,8 +303,8 @@ export const GenerateListing = () => {
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
-            <Bath className="h-3.5 w-3.5" /> Baths
+          <label className="text-xs sm:text-sm font-medium text-foreground flex items-center gap-1 sm:gap-1.5">
+            <Bath className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> Baths
           </label>
           <Input
             type="number"
@@ -315,8 +315,8 @@ export const GenerateListing = () => {
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
-            <Square className="h-3.5 w-3.5" /> Sqft
+          <label className="text-xs sm:text-sm font-medium text-foreground flex items-center gap-1 sm:gap-1.5">
+            <Square className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> Sqft
           </label>
           <Input
             type="number"
@@ -354,7 +354,7 @@ export const GenerateListing = () => {
         </div>
         <div className="flex flex-wrap gap-2 mt-3">
           {listing.features.map((feature) => (
-            <Badge key={feature} variant="secondary" className="gap-1 pr-1.5">
+            <Badge key={feature} variant="secondary" className="gap-1 pr-1.5 text-xs sm:text-sm">
               {feature}
               <button
                 onClick={() => handleRemoveFeature(feature)}
@@ -370,7 +370,7 @@ export const GenerateListing = () => {
   );
 
   const renderPreview = () => (
-    <div className="px-6 py-4">
+    <div className="px-4 sm:px-6 py-3 sm:py-4">
       <div className="rounded-xl border border-border overflow-hidden bg-card">
         {/* Hero Image */}
         <div className="relative aspect-[16/9] overflow-hidden">
@@ -396,44 +396,44 @@ export const GenerateListing = () => {
         </div>
 
         {/* Content */}
-        <div className="p-5">
-          <div className="flex items-start justify-between gap-4 mb-3">
-            <div>
-              <h3 className="text-xl font-semibold text-foreground">{listing.title}</h3>
-              <p className="text-muted-foreground flex items-center gap-1 mt-1">
-                <MapPin className="h-4 w-4" />
-                {listing.address}
+        <div className="p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-3">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground line-clamp-2">{listing.title}</h3>
+              <p className="text-sm sm:text-base text-muted-foreground flex items-center gap-1 mt-1">
+                <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span className="truncate">{listing.address}</span>
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-primary">{formatPrice(listing.price)}</div>
-              <Badge variant="outline" className="mt-1">{listing.type}</Badge>
+            <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0 sm:text-right flex-shrink-0">
+              <div className="text-xl sm:text-2xl font-bold text-primary">{formatPrice(listing.price)}</div>
+              <Badge variant="outline" className="sm:mt-1">{listing.type}</Badge>
             </div>
           </div>
 
-          <div className="flex gap-6 py-4 border-y border-border">
-            <div className="flex items-center gap-2">
-              <Bed className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">{listing.beds}</span>
-              <span className="text-muted-foreground">Beds</span>
+          <div className="flex flex-wrap gap-3 sm:gap-6 py-3 sm:py-4 border-y border-border">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Bed className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              <span className="font-medium text-sm sm:text-base">{listing.beds}</span>
+              <span className="text-muted-foreground text-sm sm:text-base">Beds</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Bath className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">{listing.baths}</span>
-              <span className="text-muted-foreground">Baths</span>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Bath className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              <span className="font-medium text-sm sm:text-base">{listing.baths}</span>
+              <span className="text-muted-foreground text-sm sm:text-base">Baths</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Square className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">{listing.sqft.toLocaleString()}</span>
-              <span className="text-muted-foreground">Sqft</span>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Square className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              <span className="font-medium text-sm sm:text-base">{listing.sqft.toLocaleString()}</span>
+              <span className="text-muted-foreground text-sm sm:text-base">Sqft</span>
             </div>
           </div>
 
-          <p className="text-foreground mt-4 leading-relaxed">{listing.description}</p>
+          <p className="text-sm sm:text-base text-foreground mt-4 leading-relaxed">{listing.description}</p>
 
-          <div className="flex flex-wrap gap-2 mt-4">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-4">
             {listing.features.map((feature) => (
-              <Badge key={feature} variant="secondary">
+              <Badge key={feature} variant="secondary" className="text-xs sm:text-sm">
                 {feature}
               </Badge>
             ))}
@@ -444,11 +444,11 @@ export const GenerateListing = () => {
   );
 
   const renderFooter = () => (
-    <div className="flex items-center justify-between px-6 py-4 border-t border-border/50 bg-muted/30">
-      <Button variant="outline" onClick={handleSaveDraft}>
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 border-t border-border/50 bg-muted/30">
+      <Button variant="outline" onClick={handleSaveDraft} className="order-2 sm:order-1">
         Save as Draft
       </Button>
-      <Button onClick={() => setPlatformDialogOpen(true)} className="gap-2">
+      <Button onClick={() => setPlatformDialogOpen(true)} className="gap-2 order-1 sm:order-2">
         <Share2 className="h-4 w-4" />
         List Property
       </Button>
@@ -457,43 +457,45 @@ export const GenerateListing = () => {
 
   const renderPlatformDialog = () => (
     <Dialog open={platformDialogOpen} onOpenChange={setPlatformDialogOpen}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Select Platforms</DialogTitle>
         </DialogHeader>
-        <div className="py-4">
-          <div className="flex justify-between mb-4">
-            <Button variant="ghost" size="sm" onClick={handleSelectAll}>
+        <div className="py-2 sm:py-4 flex-1 overflow-hidden">
+          <div className="flex justify-between mb-3 sm:mb-4">
+            <Button variant="ghost" size="sm" onClick={handleSelectAll} className="text-xs sm:text-sm">
               Select All
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleDeselectAll}>
+            <Button variant="ghost" size="sm" onClick={handleDeselectAll} className="text-xs sm:text-sm">
               Deselect All
             </Button>
           </div>
-          <div className="space-y-3">
-            {platforms.map((platform) => (
-              <label
-                key={platform.id}
-                className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer transition-colors"
-              >
-                <Checkbox
-                  checked={platform.selected}
-                  onCheckedChange={() => handleTogglePlatform(platform.id)}
-                />
-                <span className="text-muted-foreground">{platform.icon}</span>
-                <span className="font-medium">{platform.name}</span>
-                {platform.selected && (
-                  <CheckCircle2 className="h-4 w-4 text-primary ml-auto" />
-                )}
-              </label>
-            ))}
-          </div>
+          <ScrollArea className="h-[40vh] sm:h-auto sm:max-h-[300px]">
+            <div className="space-y-2 sm:space-y-3 pr-2">
+              {platforms.map((platform) => (
+                <label
+                  key={platform.id}
+                  className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer transition-colors"
+                >
+                  <Checkbox
+                    checked={platform.selected}
+                    onCheckedChange={() => handleTogglePlatform(platform.id)}
+                  />
+                  <span className="text-muted-foreground">{platform.icon}</span>
+                  <span className="font-medium text-sm sm:text-base">{platform.name}</span>
+                  {platform.selected && (
+                    <CheckCircle2 className="h-4 w-4 text-primary ml-auto" />
+                  )}
+                </label>
+              ))}
+            </div>
+          </ScrollArea>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setPlatformDialogOpen(false)}>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={() => setPlatformDialogOpen(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button onClick={handlePublish} disabled={selectedPlatformCount === 0}>
+          <Button onClick={handlePublish} disabled={selectedPlatformCount === 0} className="w-full sm:w-auto">
             Publish to {selectedPlatformCount} platform{selectedPlatformCount !== 1 ? "s" : ""}
           </Button>
         </DialogFooter>

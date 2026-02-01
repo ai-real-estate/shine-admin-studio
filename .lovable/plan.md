@@ -1,132 +1,118 @@
 
 
-# Chat Workspace Page Implementation
+# Property Detail Dialog Implementation
 
-When a user enters a prompt and presses Enter, they'll navigate to a new workspace page with a two-panel layout: a chat panel on the left and an animated demo/preview panel on the right.
+Add a dialog window that displays detailed property information when clicking on any property card, marker, or table row. The dialog design is inspired by the Zillow-style reference showing a photo gallery, property details, and action buttons.
 
 ## Overview
 
-```text
-+--------+---------------------------+---------------------------+
-|        |       CHAT PANEL          |      PREVIEW PANEL        |
-|  Mini  | +----------------------+  | +----------------------+  |
-| Sidebar| | Chat messages        |  | |                      |  |
-|  (64px)| |                      |  | |   Animated Demo      |  |
-|        | |                      |  | |   Preview Area       |  |
-|        | |                      |  | |                      |  |
-|        | +----------------------+  | +----------------------+  |
-|        | | Prompt input bar     |  |                           |
-|        | +----------------------+  |                           |
-+--------+---------------------------+---------------------------+
-```
+When a user clicks on a property in any view (Grid, Map, or Table), a dialog opens showing:
+- Photo gallery with main image and thumbnails
+- Property title with verification badge
+- Address
+- Feature tags (property type, beds, pet-friendly, amenities)
+- Action buttons (Schedule Tour, Apply Now)
+- Property specifications (beds, baths, sqft)
 
-## Files to Create/Modify
+## Files to Modify/Create
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `src/pages/ChatWorkspace.tsx` | Create | New workspace page with two-panel layout |
-| `src/components/ChatPanel.tsx` | Create | Left panel with chat messages and input |
-| `src/components/PreviewPanel.tsx` | Create | Right panel with animated demo content |
-| `src/pages/Index.tsx` | Modify | Add navigation logic to ChatWorkspace on submit |
-| `src/App.tsx` | Modify | Register the new `/chat` route |
+| `src/components/PropertyDetailDialog.tsx` | Create | New dialog component for property details |
+| `src/components/PropertyListing.tsx` | Modify | Add click handlers and dialog state |
 
-## Component Details
+## Component Design
 
-### 1. ChatPanel Component
-A chat interface showing conversation history with the AI:
+### PropertyDetailDialog Component
 
-**Features:**
-- Message list displaying user prompts and AI responses
-- Scrollable message area
-- Bottom-fixed prompt input bar (reusing elements from PromptChatWindow)
-- Message bubbles with different styles for user vs AI
-
-**Initial State:**
-- Shows the initial user prompt passed from the Index page
-- Placeholder AI response (e.g., "I'm working on that...")
-
-### 2. PreviewPanel Component
-An animated demo area on the right side:
-
-**Features:**
-- Placeholder content with animated elements
-- Could show: code preview, app mockup, or loading animations
-- Subtle animations: fade-in elements, pulsing dots, skeleton loaders
-
-**Animated Demo Ideas:**
-- Typing animation showing "Building your app..."
-- Animated skeleton UI components
-- Floating geometric shapes with subtle movement
-- Code block with syntax highlighting that "types" out
-
-### 3. ChatWorkspace Page
-The main workspace page combining both panels:
-
-**Layout:**
-- Uses the same MiniSidebar from Index page (maintains navigation consistency)
-- Two-panel resizable layout using `react-resizable-panels` (already installed)
-- Left panel: ~40% width for ChatPanel
-- Right panel: ~60% width for PreviewPanel
-- Both panels have the same rounded container styling as Index page
-
-### 4. Index Page Changes
-- Modify the `onSubmit` callback in PromptChatWindow
-- Navigate to `/chat` route with the prompt as state/param
-
-## Technical Implementation
-
-### Navigation Flow
-1. User types prompt on Index page
-2. Presses Enter or clicks Send button
-3. Navigate to `/chat?prompt={encodedPrompt}` or use React Router state
-4. ChatWorkspace reads the initial prompt and displays it
-
-### Animations for Preview Panel
-Using existing Tailwind animations from the config:
-- `animate-fade-in` for initial content
-- `animate-slide-in-right` for elements appearing
-- Custom pulse/typing animations for the "building" effect
-
-### Message Data Structure
-```typescript
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
+```text
++--------------------------------------------------+
+|  [X]                                              |
+|  +------------------+  +-------+  +-------+       |
+|  |                  |  |  img  |  |  img  |       |
+|  |   Main Image     |  +-------+  +-------+       |
+|  |                  |  +-------+  +-------+       |
+|  |                  |  |  img  |  | See   |       |
+|  +------------------+  +-------+  | all   |       |
+|                                                   |
+|  Property Title  ✓                                |
+|  123 Address Street, City, ST 12345               |
+|                                                   |
+|  +--------+ +----------+ +---------+ +--------+   |
+|  | Type   | | Beds     | | Feature | | Feature|   |
+|  +--------+ +----------+ +---------+ +--------+   |
+|                                                   |
+|  +-------------------+  +--------------------+    |
+|  |   Schedule Tour   |  |    Apply Now       |    |
+|  +-------------------+  +--------------------+    |
++--------------------------------------------------+
 ```
 
-## Visual Design
+**Props:**
+- `property: Property | null` - The property to display (null when closed)
+- `open: boolean` - Whether dialog is open
+- `onOpenChange: (open: boolean) => void` - Callback for open state changes
 
-**Chat Panel:**
-- Clean white/card background
-- Message bubbles: user messages aligned right (accent color), AI messages aligned left (muted)
-- Prompt bar at bottom with same styling as PromptChatWindow
+**Features:**
+- Photo gallery: Main large image + 4 thumbnail grid
+- "See all photos" button overlay on last thumbnail
+- Property title with green check badge
+- Address display
+- Feature tags using Badge components
+- Two action buttons: Schedule Tour (primary), Apply Now (outline)
+- Detailed specs section with icons
 
-**Preview Panel:**
-- Gradient background matching the Index page style
-- Centered animated content
-- Professional "under construction" or preview feeling
+### Property Interface Updates
 
----
+Add additional fields to the Property interface for the detail view:
+- `images: string[]` - Array of additional property images
+- `features: string[]` - Array of feature tags
+- `petFriendly: boolean`
+- `verified: boolean`
+
+## Implementation Details
+
+### Dialog Sizing
+- Use a wider dialog: `max-w-4xl` to accommodate the photo gallery
+- Add `overflow-hidden` for proper image clipping
+- Use `ScrollArea` for content if needed
+
+### Photo Gallery Layout
+- CSS Grid: Main image takes left 60%, thumbnail grid takes right 40%
+- 2x2 thumbnail grid
+- Last thumbnail has "See all X photos" overlay
+
+### Feature Tags
+Each feature displayed as a pill/badge with icon:
+- Building icon + property type
+- Bed icon + bed count
+- Paw icon + "Pet-friendly" (if applicable)
+- Additional amenity tags
+
+### Click Handler Integration
+Update all three views to trigger the dialog:
+- **GridView**: Add onClick to the property card div
+- **MapView**: Add onClick to the marker div
+- **TableView**: Add onClick to the TableRow
+
+### State Management
+Add to PropertyListing component:
+- `selectedProperty: Property | null` - Currently selected property
+- `dialogOpen: boolean` - Dialog visibility state
 
 ## Technical Details
 
-### Route Setup
-```typescript
-// App.tsx - Add new route
-<Route path="/chat" element={<ChatWorkspace />} />
-```
+### Icons Needed (from lucide-react)
+- `CheckCircle2` or `BadgeCheck` - Verification badge
+- `Building2` - Property type
+- `PawPrint` - Pet-friendly
+- `Wifi` - Amenities (example)
+- `Car` - Parking (example)
+- `WashingMachine` - Laundry (example)
+- `Heart` - Save/favorite button
+- `Share2` - Share button
+- `MoreHorizontal` - More options
 
-### Resizable Panels Usage
-The project already has `react-resizable-panels` installed. Will use:
-- `ResizablePanelGroup` with horizontal direction
-- `ResizablePanel` for each side
-- `ResizableHandle` for drag-to-resize functionality
-
-### State Management
-- Initial prompt passed via URL search params or router state
-- Local state for chat messages in ChatWorkspace
-- Messages array will be updatable for future AI integration
+### Mock Data Enhancement
+Add gallery images and features to each mock property for a richer detail view.
 

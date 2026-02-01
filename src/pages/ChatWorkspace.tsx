@@ -6,6 +6,7 @@ import { ChatPanel } from "@/components/ChatPanel";
 import { PreviewPanel } from "@/components/PreviewPanel";
 import { PropertyListing } from "@/components/PropertyListing";
 import { PropertyValuation } from "@/components/PropertyValuation";
+import { UndervaluedProperties } from "@/components/UndervaluedProperties";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -14,6 +15,7 @@ import {
 
 const PROPERTY_KEYWORDS = ["find property", "find properties"];
 const VALUATION_KEYWORDS = ["valuation", "valuate", "estimation", "estimate"];
+const UNDERVALUED_KEYWORDS = ["undervalued"];
 
 const ChatWorkspace = () => {
   const [searchParams] = useSearchParams();
@@ -28,6 +30,9 @@ const ChatWorkspace = () => {
   );
   const [showValuation, setShowValuation] = useState(
     VALUATION_KEYWORDS.some(kw => lowerPrompt.includes(kw))
+  );
+  const [showUndervalued, setShowUndervalued] = useState(
+    UNDERVALUED_KEYWORDS.some(kw => lowerPrompt.includes(kw))
   );
   const navigate = useNavigate();
 
@@ -50,13 +55,26 @@ const ChatWorkspace = () => {
     if (PROPERTY_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
       setShowPropertyListing(true);
       setShowValuation(false);
+      setShowUndervalued(false);
     } else if (VALUATION_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
       setShowValuation(true);
       setShowPropertyListing(false);
+      setShowUndervalued(false);
+    } else if (UNDERVALUED_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      setShowUndervalued(true);
+      setShowPropertyListing(false);
+      setShowValuation(false);
     }
   };
 
   const renderRightPanel = () => {
+    if (showUndervalued) {
+      return (
+        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+          <UndervaluedProperties />
+        </div>
+      );
+    }
     if (showValuation) {
       return (
         <div className="h-full rounded-2xl border border-border/50 overflow-hidden">

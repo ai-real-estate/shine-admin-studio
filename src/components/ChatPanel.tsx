@@ -106,7 +106,7 @@ export function ChatPanel({ initialPrompt, onMessage }: ChatPanelProps) {
       </ScrollArea>
 
       {/* Input Area */}
-      <div className="border-t border-border/50 p-3">
+      <div className="p-3">
         <div className="rounded-xl border border-border bg-background overflow-hidden">
           <Textarea
             value={prompt}

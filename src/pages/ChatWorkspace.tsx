@@ -1,10 +1,19 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { MiniSidebar } from "@/components/MiniSidebar";
 import { SettingsPanel } from "@/components/SettingsPanel";
-import { PromptChatWindow } from "@/components/PromptChatWindow";
+import { ChatPanel } from "@/components/ChatPanel";
+import { PreviewPanel } from "@/components/PreviewPanel";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
-const Index = () => {
+const ChatWorkspace = () => {
+  const [searchParams] = useSearchParams();
+  const initialPrompt = searchParams.get("prompt") || "";
+  
   const [activeItem, setActiveItem] = useState("api");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("source-groups");
@@ -23,10 +32,6 @@ const Index = () => {
     }
   };
 
-  const handlePromptSubmit = (prompt: string) => {
-    navigate(`/chat?prompt=${encodeURIComponent(prompt)}`);
-  };
-
   return (
     <div className="flex h-screen w-full bg-background">
       {/* Mini Sidebar */}
@@ -43,20 +48,24 @@ const Index = () => {
         onSectionClick={setActiveSection}
       />
 
-      {/* Main Content */}
-      <main className="flex flex-1 p-3">
-        <div 
-          className="flex flex-1 items-center justify-center rounded-2xl border border-border/50"
-          style={{ 
-            background: 'radial-gradient(ellipse 60% 80% at 50% 40%, #fffdf7, #fafaf8 60%, #fff)',
-            boxShadow: '0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)'
-          }}
-        >
-          <PromptChatWindow userName="User" onSubmit={handlePromptSubmit} />
-        </div>
+      {/* Main Content - Two Panel Layout */}
+      <main className="flex flex-1 p-3 gap-3">
+        <ResizablePanelGroup direction="horizontal" className="flex-1">
+          {/* Chat Panel - Left Side */}
+          <ResizablePanel defaultSize={40} minSize={30} maxSize={60}>
+            <ChatPanel initialPrompt={initialPrompt} />
+          </ResizablePanel>
+
+          <ResizableHandle withHandle className="mx-1" />
+
+          {/* Preview Panel - Right Side */}
+          <ResizablePanel defaultSize={60} minSize={40} maxSize={70}>
+            <PreviewPanel />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </main>
     </div>
   );
 };
 
-export default Index;
+export default ChatWorkspace;

@@ -381,7 +381,7 @@ export function PropertyValuation() {
           {/* Similar Properties */}
           <section>
             <h3 className="text-base font-semibold mb-4">Similar Properties</h3>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-1">
               {valuationData.similarProperties.map((property) => (
                 <div key={property.id} className="border border-border rounded-xl overflow-hidden bg-card">
                   <div className="relative aspect-[4/3]">

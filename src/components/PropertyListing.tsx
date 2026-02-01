@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { PropertyDetailDialog } from "@/components/PropertyDetailDialog";
 
 type ViewMode = "grid" | "map" | "table";
 
@@ -25,6 +26,10 @@ interface Property {
   baths: number;
   sqft: number;
   image: string;
+  images: string[];
+  features: string[];
+  petFriendly: boolean;
+  verified: boolean;
   coordinates: { x: number; y: number };
 }
 
@@ -39,6 +44,15 @@ const mockProperties: Property[] = [
     baths: 2,
     sqft: 1200,
     image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=300&fit=crop",
+    ],
+    features: ["Wifi", "Parking"],
+    petFriendly: true,
+    verified: true,
     coordinates: { x: 25, y: 30 },
   },
   {
@@ -51,6 +65,15 @@ const mockProperties: Property[] = [
     baths: 3,
     sqft: 2400,
     image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=400&h=300&fit=crop",
+    ],
+    features: ["Parking"],
+    petFriendly: true,
+    verified: true,
     coordinates: { x: 55, y: 45 },
   },
   {
@@ -63,6 +86,15 @@ const mockProperties: Property[] = [
     baths: 3.5,
     sqft: 3200,
     image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
+    ],
+    features: ["Wifi", "Parking"],
+    petFriendly: false,
+    verified: true,
     coordinates: { x: 75, y: 25 },
   },
   {
@@ -75,6 +107,15 @@ const mockProperties: Property[] = [
     baths: 1,
     sqft: 550,
     image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop",
+    ],
+    features: ["Wifi"],
+    petFriendly: true,
+    verified: false,
     coordinates: { x: 30, y: 60 },
   },
   {
@@ -87,6 +128,15 @@ const mockProperties: Property[] = [
     baths: 4,
     sqft: 3800,
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop",
+    ],
+    features: ["Parking"],
+    petFriendly: true,
+    verified: true,
     coordinates: { x: 50, y: 50 },
   },
   {
@@ -99,6 +149,15 @@ const mockProperties: Property[] = [
     baths: 2,
     sqft: 1100,
     image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+    ],
+    features: ["Wifi", "Parking"],
+    petFriendly: false,
+    verified: true,
     coordinates: { x: 70, y: 65 },
   },
 ];
@@ -120,6 +179,13 @@ function formatPriceShort(price: number): string {
 
 export function PropertyListing() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handlePropertyClick = (property: Property) => {
+    setSelectedProperty(property);
+    setDialogOpen(true);
+  };
 
   return (
     <div className="flex h-full flex-col bg-background">
@@ -173,21 +239,29 @@ export function PropertyListing() {
 
       {/* Content */}
       <ScrollArea className="flex-1">
-        {viewMode === "grid" && <GridView properties={mockProperties} />}
-        {viewMode === "map" && <MapView properties={mockProperties} />}
-        {viewMode === "table" && <TableView properties={mockProperties} />}
+        {viewMode === "grid" && <GridView properties={mockProperties} onPropertyClick={handlePropertyClick} />}
+        {viewMode === "map" && <MapView properties={mockProperties} onPropertyClick={handlePropertyClick} />}
+        {viewMode === "table" && <TableView properties={mockProperties} onPropertyClick={handlePropertyClick} />}
       </ScrollArea>
+
+      {/* Property Detail Dialog */}
+      <PropertyDetailDialog
+        property={selectedProperty}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }
 
-function GridView({ properties }: { properties: Property[] }) {
+function GridView({ properties, onPropertyClick }: { properties: Property[]; onPropertyClick: (property: Property) => void }) {
   return (
     <div className="grid grid-cols-1 gap-1 p-1 md:grid-cols-2 lg:grid-cols-3">
       {properties.map((property) => (
         <div
           key={property.id}
           className="group cursor-pointer overflow-hidden rounded-lg border border-border bg-card transition-all hover:shadow-card"
+          onClick={() => onPropertyClick(property)}
         >
           <div className="relative aspect-[4/3] overflow-hidden">
             <img
@@ -228,7 +302,7 @@ function GridView({ properties }: { properties: Property[] }) {
   );
 }
 
-function MapView({ properties }: { properties: Property[] }) {
+function MapView({ properties, onPropertyClick }: { properties: Property[]; onPropertyClick: (property: Property) => void }) {
   return (
     <div className="relative h-full min-h-[500px] bg-muted/30">
       {/* Map grid background */}
@@ -256,6 +330,7 @@ function MapView({ properties }: { properties: Property[] }) {
             top: `${property.coordinates.y}%`,
             transform: "translate(-50%, -50%)",
           }}
+          onClick={() => onPropertyClick(property)}
         >
           <div className="flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1.5 shadow-soft">
             <MapPin className="h-3 w-3 text-muted-foreground" />
@@ -269,7 +344,7 @@ function MapView({ properties }: { properties: Property[] }) {
   );
 }
 
-function TableView({ properties }: { properties: Property[] }) {
+function TableView({ properties, onPropertyClick }: { properties: Property[]; onPropertyClick: (property: Property) => void }) {
   return (
     <div>
       <Table>
@@ -286,7 +361,11 @@ function TableView({ properties }: { properties: Property[] }) {
         </TableHeader>
         <TableBody>
           {properties.map((property) => (
-            <TableRow key={property.id} className="cursor-pointer">
+            <TableRow
+              key={property.id}
+              className="cursor-pointer"
+              onClick={() => onPropertyClick(property)}
+            >
               <TableCell>
                 <div className="flex items-center gap-3">
                   <img

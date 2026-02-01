@@ -183,11 +183,11 @@ export function PropertyListing() {
 
 function GridView({ properties }: { properties: Property[] }) {
   return (
-    <div className="grid grid-cols-1 gap-4 p-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-1 p-1 md:grid-cols-2 lg:grid-cols-3">
       {properties.map((property) => (
         <div
           key={property.id}
-          className="group cursor-pointer overflow-hidden rounded-xl border border-border bg-card transition-all hover:shadow-card"
+          className="group cursor-pointer overflow-hidden rounded-lg border border-border bg-card transition-all hover:shadow-card"
         >
           <div className="relative aspect-[4/3] overflow-hidden">
             <img

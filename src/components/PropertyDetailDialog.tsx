@@ -15,6 +15,7 @@ import {
   Wifi,
   Car,
   MapPin,
+  LayoutGrid,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -69,33 +70,64 @@ export function PropertyDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl overflow-hidden p-0 max-h-[90vh]">
         <ScrollArea className="max-h-[90vh]">
-        {/* Photo Gallery */}
-        <div className="grid grid-cols-3 gap-1 p-1">
-          {/* Main Image */}
-          <div className="col-span-2 row-span-2">
+        {/* Photo Gallery - Zillow style layout */}
+        <div className="grid grid-cols-2 gap-1.5 p-1.5">
+          {/* Main Image - Left side, spans 2 rows */}
+          <div className="row-span-2">
             <img
               src={displayImages[0]}
               alt={property.title}
               className="h-full w-full rounded-lg object-cover"
-              style={{ minHeight: "280px" }}
+              style={{ minHeight: "320px" }}
             />
           </div>
-          {/* Thumbnail Grid */}
-          {displayImages.slice(1, 5).map((img, index) => (
-            <div key={index} className="relative">
+          
+          {/* Right side - 2x2 grid */}
+          <div className="grid grid-cols-2 grid-rows-2 gap-1.5">
+            {/* Top left thumbnail */}
+            <div className="relative">
               <img
-                src={img}
-                alt={`${property.title} ${index + 2}`}
+                src={displayImages[1]}
+                alt={`${property.title} 2`}
                 className="h-full w-full rounded-lg object-cover"
-                style={{ minHeight: "138px" }}
+                style={{ minHeight: "156px" }}
               />
-              {index === 3 && remainingCount > 0 && (
-                <button className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 text-sm font-medium text-white transition-colors hover:bg-black/60">
-                  See all {allImages.length} photos
-                </button>
-              )}
             </div>
-          ))}
+            
+            {/* Top right thumbnail */}
+            <div className="relative">
+              <img
+                src={displayImages[2]}
+                alt={`${property.title} 3`}
+                className="h-full w-full rounded-lg object-cover"
+                style={{ minHeight: "156px" }}
+              />
+            </div>
+            
+            {/* Bottom left thumbnail */}
+            <div className="relative">
+              <img
+                src={displayImages[3]}
+                alt={`${property.title} 4`}
+                className="h-full w-full rounded-lg object-cover"
+                style={{ minHeight: "156px" }}
+              />
+            </div>
+            
+            {/* Bottom right thumbnail with "See all photos" button */}
+            <div className="relative">
+              <img
+                src={displayImages[4]}
+                alt={`${property.title} 5`}
+                className="h-full w-full rounded-lg object-cover"
+                style={{ minHeight: "156px" }}
+              />
+              <button className="absolute bottom-3 right-3 flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm font-medium text-foreground shadow-md transition-colors hover:bg-gray-50">
+                <LayoutGrid className="h-4 w-4" />
+                See all {allImages.length} photos
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Property Info */}

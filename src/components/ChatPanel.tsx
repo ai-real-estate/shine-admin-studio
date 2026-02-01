@@ -14,9 +14,10 @@ interface ChatMessage {
 
 interface ChatPanelProps {
   initialPrompt?: string;
+  onMessage?: (message: string) => void;
 }
 
-export function ChatPanel({ initialPrompt }: ChatPanelProps) {
+export function ChatPanel({ initialPrompt, onMessage }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const initial: ChatMessage[] = [];
     if (initialPrompt) {
@@ -55,6 +56,7 @@ export function ChatPanel({ initialPrompt }: ChatPanelProps) {
     };
     
     setMessages(prev => [...prev, newMessage]);
+    onMessage?.(prompt);
     setPrompt("");
     
     // Simulate AI response

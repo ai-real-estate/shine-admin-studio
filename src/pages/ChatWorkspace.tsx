@@ -4,6 +4,7 @@ import { MiniSidebar } from "@/components/MiniSidebar";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { ChatPanel } from "@/components/ChatPanel";
 import { PreviewPanel } from "@/components/PreviewPanel";
+import { PropertyListing } from "@/components/PropertyListing";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -17,6 +18,10 @@ const ChatWorkspace = () => {
   const [activeItem, setActiveItem] = useState("api");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("source-groups");
+  const [showPropertyListing, setShowPropertyListing] = useState(
+    initialPrompt.toLowerCase().includes("find property") ||
+    initialPrompt.toLowerCase().includes("find properties")
+  );
   const navigate = useNavigate();
 
   const handleItemClick = (item: string) => {
@@ -29,6 +34,15 @@ const ChatWorkspace = () => {
       setSettingsOpen(true);
     } else {
       setSettingsOpen(false);
+    }
+  };
+
+  const handleChatMessage = (message: string) => {
+    if (
+      message.toLowerCase().includes("find property") ||
+      message.toLowerCase().includes("find properties")
+    ) {
+      setShowPropertyListing(true);
     }
   };
 
@@ -53,14 +67,20 @@ const ChatWorkspace = () => {
         <ResizablePanelGroup direction="horizontal" className="flex-1">
           {/* Chat Panel - Left Side */}
           <ResizablePanel defaultSize={40} minSize={30} maxSize={60}>
-            <ChatPanel initialPrompt={initialPrompt} />
+            <ChatPanel initialPrompt={initialPrompt} onMessage={handleChatMessage} />
           </ResizablePanel>
 
           <ResizableHandle withHandle className="mx-1" />
 
           {/* Preview Panel - Right Side */}
           <ResizablePanel defaultSize={60} minSize={40} maxSize={70}>
-            <PreviewPanel />
+            {showPropertyListing ? (
+              <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+                <PropertyListing />
+              </div>
+            ) : (
+              <PreviewPanel />
+            )}
           </ResizablePanel>
         </ResizablePanelGroup>
       </main>

@@ -8,6 +8,7 @@ import { PropertyListing } from "@/components/PropertyListing";
 import { PropertyValuation } from "@/components/PropertyValuation";
 import { UndervaluedProperties } from "@/components/UndervaluedProperties";
 import { GenerateListing } from "@/components/GenerateListing";
+import { RentAnalytics } from "@/components/RentAnalytics";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -18,6 +19,7 @@ const PROPERTY_KEYWORDS = ["find property", "find properties"];
 const VALUATION_KEYWORDS = ["valuation", "valuate", "estimation", "estimate"];
 const UNDERVALUED_KEYWORDS = ["undervalued"];
 const GENERATE_LISTING_KEYWORDS = ["generate listing", "create listing", "new listing"];
+const RENT_ANALYTICS_KEYWORDS = ["avg rent", "rent analytics", "rent miami", "average rent"];
 
 const ChatWorkspace = () => {
   const [searchParams] = useSearchParams();
@@ -38,6 +40,9 @@ const ChatWorkspace = () => {
   );
   const [showGenerateListing, setShowGenerateListing] = useState(
     GENERATE_LISTING_KEYWORDS.some(kw => lowerPrompt.includes(kw))
+  );
+  const [showRentAnalytics, setShowRentAnalytics] = useState(
+    RENT_ANALYTICS_KEYWORDS.some(kw => lowerPrompt.includes(kw))
   );
   const navigate = useNavigate();
 
@@ -61,23 +66,33 @@ const ChatWorkspace = () => {
   const handleChatMessage = (message: string) => {
     const lowerMessage = message.toLowerCase();
     
-    if (GENERATE_LISTING_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+    if (RENT_ANALYTICS_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      setShowRentAnalytics(true);
+      setShowGenerateListing(false);
+      setShowPropertyListing(false);
+      setShowValuation(false);
+      setShowUndervalued(false);
+    } else if (GENERATE_LISTING_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
       setShowGenerateListing(true);
+      setShowRentAnalytics(false);
       setShowPropertyListing(false);
       setShowValuation(false);
       setShowUndervalued(false);
     } else if (PROPERTY_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
       setShowPropertyListing(true);
+      setShowRentAnalytics(false);
       setShowValuation(false);
       setShowUndervalued(false);
       setShowGenerateListing(false);
     } else if (VALUATION_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
       setShowValuation(true);
+      setShowRentAnalytics(false);
       setShowPropertyListing(false);
       setShowUndervalued(false);
       setShowGenerateListing(false);
     } else if (UNDERVALUED_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
       setShowUndervalued(true);
+      setShowRentAnalytics(false);
       setShowPropertyListing(false);
       setShowValuation(false);
       setShowGenerateListing(false);
@@ -85,6 +100,13 @@ const ChatWorkspace = () => {
   };
 
   const renderRightPanel = () => {
+    if (showRentAnalytics) {
+      return (
+        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+          <RentAnalytics />
+        </div>
+      );
+    }
     if (showGenerateListing) {
       return (
         <div className="h-full rounded-2xl border border-border/50 overflow-hidden">

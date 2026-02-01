@@ -275,8 +275,8 @@ function TableView({ properties }: { properties: Property[] }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[280px]">Property</TableHead>
-            <TableHead>Address</TableHead>
+            <TableHead className="w-[200px]">Property</TableHead>
+            <TableHead className="w-[200px]">Address</TableHead>
             <TableHead>Type</TableHead>
             <TableHead className="text-right">Price</TableHead>
             <TableHead className="text-right">Beds</TableHead>

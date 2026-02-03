@@ -52,7 +52,7 @@ const Index = () => {
       />
 
       {/* Main Content */}
-      <main className="flex flex-1 p-3">
+      <main className="flex flex-1 p-3 pl-0">
         <div 
           className="flex flex-1 items-center justify-center rounded-2xl border border-border/50"
           style={{ 

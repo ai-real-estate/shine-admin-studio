@@ -350,39 +350,8 @@ export default function MyListings() {
             </Button>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="flex items-center gap-1 border-b border-border/30 px-4 py-3">
-            {statusTabs.map((tab) => {
-              const count = getStatusCount(tab.id);
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setStatusFilter(tab.id)}
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-smooth",
-                    statusFilter === tab.id
-                      ? "bg-muted text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                  )}
-                >
-                  {tab.label}
-                  <span
-                    className={cn(
-                      "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs",
-                      statusFilter === tab.id
-                        ? "bg-foreground/10 text-foreground"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
           {/* Toolbar */}
-          <div className="flex items-center justify-between gap-4 border-b border-border/30 px-4 py-3">
+          <div className="flex flex-col gap-3 border-b border-border/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative flex-1 max-w-xs">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -391,6 +360,37 @@ export default function MyListings() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-9 pl-9"
               />
+            </div>
+            <div className="flex min-w-0 flex-1 justify-start sm:justify-center">
+              <div className="flex items-center gap-1 overflow-x-auto">
+                {statusTabs.map((tab) => {
+                  const count = getStatusCount(tab.id);
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setStatusFilter(tab.id)}
+                      className={cn(
+                        "flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm transition-smooth",
+                        statusFilter === tab.id
+                          ? "bg-muted text-foreground font-medium"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      )}
+                    >
+                      {tab.label}
+                      <span
+                        className={cn(
+                          "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs",
+                          statusFilter === tab.id
+                            ? "bg-foreground/10 text-foreground"
+                            : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1">
               <button

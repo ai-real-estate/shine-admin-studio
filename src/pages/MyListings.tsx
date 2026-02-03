@@ -26,6 +26,7 @@ import {
   FileText,
   Search,
   Plus,
+  LayoutList,
   LayoutGrid,
   List,
   MoreHorizontal,
@@ -35,8 +36,6 @@ import {
   Trash2,
   Eye,
   MessageSquare,
-  Home,
-  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -333,22 +332,17 @@ export default function MyListings() {
           }}
         >
           {/* Header */}
-          <div className="flex flex-col gap-4 border-b border-border/50 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <Home className="h-4 w-4" />
-                <ChevronRight className="h-3 w-3" />
-                <span className="text-foreground font-medium">My Listings</span>
+          <div className="flex flex-col gap-3 border-b border-border/50 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <LayoutList className="h-5 w-5 text-muted-foreground" />
+                <h1 className="text-lg font-semibold">My Listings</h1>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {listings.length} listing{listings.length !== 1 ? "s" : ""}
-              </p>
+              <Button onClick={handleNewListing}>
+                <Plus className="h-4 w-4" />
+                New Listing
+              </Button>
             </div>
-            <Button onClick={handleNewListing}>
-              <Plus className="h-4 w-4" />
-              New Listing
-            </Button>
-          </div>
 
           {/* Toolbar */}
           <div className="flex flex-col gap-3 border-b border-border/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">

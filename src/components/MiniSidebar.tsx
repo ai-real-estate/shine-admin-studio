@@ -35,7 +35,12 @@ export function MiniSidebar({ activeItem, onItemClick, unreadCount = 0 }: MiniSi
         onClick={() => navigate("/")}
         className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-accent hover:opacity-80 transition-opacity cursor-pointer"
       >
-        <span className="text-lg font-bold text-accent-foreground">P</span>
+        {/* <span className="text-lg font-bold text-accent-foreground">P</span> */}
+        <img
+          src="/logo.png"
+          alt="Estatio logo"
+          className="h-8 object-cover"
+        />
       </button>
 
       {/* Main Navigation */}

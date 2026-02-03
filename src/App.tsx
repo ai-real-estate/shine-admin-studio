@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Notifications from "./pages/Notifications";
 import ChatWorkspace from "./pages/ChatWorkspace";
 import ConnectPlatforms from "./pages/ConnectPlatforms";
+import MyListings from "./pages/MyListings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/chat" element={<ChatWorkspace />} />
           <Route path="/platforms" element={<ConnectPlatforms />} />
+          <Route path="/my-listings" element={<MyListings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

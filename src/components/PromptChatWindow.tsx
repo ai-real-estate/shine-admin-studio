@@ -8,6 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Plus, Paperclip, Palette, ChevronDown, ArrowUp, AudioLines } from "lucide-react";
+import {
+  DEFAULT_MOCK_PROFILE,
+  getLocationSlangGreeting,
+  getTimeOfDayGreeting,
+  matchLocationFromCoords,
+} from "@/lib/greeting";
 
 interface PromptChatWindowProps {
   userName?: string;
@@ -19,6 +25,13 @@ interface HintChip {
   basePrompt: string;
   locations?: string[];
 }
+
+interface MockUserProfile {
+  firstName: string;
+  location?: string;
+}
+
+const MOCK_PROFILE_KEY = "shine.mockUserProfile";
 
 const HINT_CHIPS: HintChip[] = [
   { 
@@ -47,16 +60,164 @@ const HINT_CHIPS: HintChip[] = [
 ];
 
 export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWindowProps) => {
+  const readMockProfile = (): MockUserProfile => {
+    if (typeof window === "undefined") {
+      return {
+        ...DEFAULT_MOCK_PROFILE,
+        firstName: userName || DEFAULT_MOCK_PROFILE.firstName,
+      };
+    }
+
+    try {
+      const rawProfile = window.localStorage.getItem(MOCK_PROFILE_KEY);
+      if (!rawProfile) {
+        window.localStorage.setItem(
+          MOCK_PROFILE_KEY,
+          JSON.stringify(DEFAULT_MOCK_PROFILE),
+        );
+        return DEFAULT_MOCK_PROFILE;
+      }
+
+      let parsed: Partial<MockUserProfile> | null = null;
+      try {
+        parsed = JSON.parse(rawProfile) as Partial<MockUserProfile> | null;
+      } catch {
+        window.localStorage.setItem(
+          MOCK_PROFILE_KEY,
+          JSON.stringify(DEFAULT_MOCK_PROFILE),
+        );
+        return DEFAULT_MOCK_PROFILE;
+      }
+      const firstName =
+        typeof parsed?.firstName === "string" && parsed.firstName.trim().length > 0
+          ? parsed.firstName.trim()
+          : DEFAULT_MOCK_PROFILE.firstName;
+      const location =
+        typeof parsed?.location === "string" && parsed.location.trim().length > 0
+          ? parsed.location.trim()
+          : DEFAULT_MOCK_PROFILE.location;
+      const cleanedProfile = { firstName, location };
+
+      if (
+        parsed?.firstName !== cleanedProfile.firstName ||
+        parsed?.location !== cleanedProfile.location
+      ) {
+        window.localStorage.setItem(
+          MOCK_PROFILE_KEY,
+          JSON.stringify(cleanedProfile),
+        );
+      }
+
+      return cleanedProfile;
+    } catch {
+      return {
+        ...DEFAULT_MOCK_PROFILE,
+        firstName: userName || DEFAULT_MOCK_PROFILE.firstName,
+      };
+    }
+  };
+
+  const persistMockProfile = (profile: MockUserProfile) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    try {
+      window.localStorage.setItem(MOCK_PROFILE_KEY, JSON.stringify(profile));
+    } catch {
+      // Ignore localStorage failures.
+    }
+  };
+
+  const computeGreeting = (profile: MockUserProfile) => {
+    const resolvedName = profile.firstName?.trim() || userName || "there";
+    const slangGreeting = getLocationSlangGreeting(resolvedName, profile.location);
+    if (slangGreeting) {
+      return slangGreeting;
+    }
+    return getTimeOfDayGreeting(
+      resolvedName,
+      new Date().getHours(),
+      Boolean(profile.location),
+    );
+  };
+
   const [prompt, setPrompt] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
   const animationRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [profile, setProfile] = useState<MockUserProfile>(() => readMockProfile());
+  const [greeting, setGreeting] = useState(() => computeGreeting(profile));
+  const profileRef = useRef<MockUserProfile>(profile);
 
   useEffect(() => {
     return () => {
       if (animationRef.current) {
         clearTimeout(animationRef.current);
       }
+    };
+  }, []);
+
+  useEffect(() => {
+    profileRef.current = profile;
+    setGreeting(computeGreeting(profile));
+  }, [profile, userName]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      return;
+    }
+
+    let didCancel = false;
+
+    const handleSuccess = (position: GeolocationPosition) => {
+      if (didCancel) {
+        return;
+      }
+      const matchedLocation = matchLocationFromCoords(
+        position.coords.latitude,
+        position.coords.longitude,
+      );
+      if (!matchedLocation) {
+        return;
+      }
+      const currentProfile = profileRef.current;
+      if (
+        currentProfile.location?.toLowerCase() === matchedLocation.toLowerCase()
+      ) {
+        return;
+      }
+      const updatedProfile = {
+        ...currentProfile,
+        location: matchedLocation,
+      };
+      profileRef.current = updatedProfile;
+      setProfile(updatedProfile);
+      persistMockProfile(updatedProfile);
+    };
+
+    const requestLocation = () => {
+      navigator.geolocation.getCurrentPosition(handleSuccess, undefined, {
+        timeout: 8000,
+      });
+    };
+
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: "geolocation" as PermissionName })
+        .then((status) => {
+          if (status.state === "granted" || status.state === "prompt") {
+            requestLocation();
+          }
+        })
+        .catch(() => {
+          requestLocation();
+        });
+    } else {
+      requestLocation();
+    }
+
+    return () => {
+      didCancel = true;
     };
   }, []);
 
@@ -169,7 +330,7 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
     <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4">
       {/* Greeting */}
       <h1 className="text-3xl md:text-4xl font-semibold text-foreground mb-8 text-center">
-        Let's build something, {userName}
+        {greeting}
       </h1>
 
       {/* Input Card */}

@@ -61,7 +61,7 @@ const ChatWorkspace = () => {
       navigate("/platforms");
       return;
     }
-    if (item === "listings") {
+    if (item === "my-listings") {
       navigate("/my-listings");
       return;
     }

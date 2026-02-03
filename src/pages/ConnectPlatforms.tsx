@@ -146,7 +146,7 @@ const ConnectPlatforms = () => {
     if (item === "platforms") {
       return;
     }
-    if (item === "listings") {
+    if (item === "my-listings") {
       navigate("/my-listings");
       return;
     }

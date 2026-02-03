@@ -269,7 +269,7 @@ const ConnectPlatforms = () => {
 
           {/* Content */}
           <ScrollArea className="flex-1">
-            <div className="p-4 space-y-6">
+            <div className="mx-auto max-w-2xl p-4 space-y-6">
               {/* Connected Platforms */}
               {connectedPlatforms.length > 0 && (
                 <section>

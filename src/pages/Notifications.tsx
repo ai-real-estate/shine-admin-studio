@@ -115,6 +115,14 @@ export default function Notifications() {
   const handleItemClick = (item: string) => {
     setActiveItem(item);
     if (item === "notifications") return;
+    if (item === "platforms") {
+      navigate("/platforms");
+      return;
+    }
+    if (item === "listings") {
+      navigate("/my-listings");
+      return;
+    }
     navigate("/");
   };
 

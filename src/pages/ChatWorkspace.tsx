@@ -61,6 +61,10 @@ const ChatWorkspace = () => {
       navigate("/platforms");
       return;
     }
+    if (item === "listings") {
+      navigate("/my-listings");
+      return;
+    }
     if (item === "settings") {
       setSettingsOpen(true);
     } else {

@@ -213,7 +213,7 @@ const formatPrice = (price: number) => {
 };
 
 export default function MyListings() {
-  const [activeItem, setActiveItem] = useState("listings");
+  const [activeItem, setActiveItem] = useState("my-listings");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("source-groups");
   const [listings, setListings] = useState(mockListings);
@@ -233,7 +233,7 @@ export default function MyListings() {
       navigate("/platforms");
       return;
     }
-    if (item === "listings") {
+    if (item === "my-listings") {
       return;
     }
     if (item === "settings") {
@@ -317,7 +317,7 @@ export default function MyListings() {
         isOpen={settingsOpen}
         onClose={() => {
           setSettingsOpen(false);
-          setActiveItem("listings");
+          setActiveItem("my-listings");
         }}
         activeSection={activeSection}
         onSectionClick={setActiveSection}

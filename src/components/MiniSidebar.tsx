@@ -16,7 +16,7 @@ const navItems = [
   // { id: "code", icon: Code, label: "Code" },
   { id: "api", icon: Zap, label: "API" },
   { id: "platforms", icon: Share2, label: "Platforms" },
-  { id: "listings", icon: LayoutList, label: "My Listings" },
+  { id: "my-listings", icon: LayoutList, label: "My Listings" },
 ];
 
 const bottomItems = [

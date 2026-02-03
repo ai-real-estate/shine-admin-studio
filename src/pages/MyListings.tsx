@@ -26,6 +26,7 @@ import {
   FileText,
   Search,
   Plus,
+  LayoutList,
   LayoutGrid,
   List,
   MoreHorizontal,
@@ -35,8 +36,6 @@ import {
   Trash2,
   Eye,
   MessageSquare,
-  Home,
-  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -333,52 +332,49 @@ export default function MyListings() {
           }}
         >
           {/* Header */}
-          <div className="flex flex-col gap-4 border-b border-border/50 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                <Home className="h-4 w-4" />
-                <ChevronRight className="h-3 w-3" />
-                <span className="text-foreground font-medium">My Listings</span>
+          <div className="flex flex-col gap-3 border-b border-border/50 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <LayoutList className="h-5 w-5 text-muted-foreground" />
+                <h1 className="text-lg font-semibold">My Listings</h1>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {listings.length} listing{listings.length !== 1 ? "s" : ""}
-              </p>
+              <Button onClick={handleNewListing}>
+                <Plus className="h-4 w-4" />
+                New Listing
+              </Button>
             </div>
-            <Button onClick={handleNewListing}>
-              <Plus className="h-4 w-4" />
-              New Listing
-            </Button>
-          </div>
 
-          {/* Filter Tabs */}
-          <div className="flex items-center gap-1 border-b border-border/30 px-4 py-3">
-            {statusTabs.map((tab) => {
-              const count = getStatusCount(tab.id);
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setStatusFilter(tab.id)}
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-smooth",
-                    statusFilter === tab.id
-                      ? "bg-muted text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                  )}
-                >
-                  {tab.label}
-                  <span
-                    className={cn(
-                      "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs",
-                      statusFilter === tab.id
-                        ? "bg-foreground/10 text-foreground"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+            <div className="flex items-center justify-center">
+              <div className="flex items-center gap-1">
+                {statusTabs.map((tab) => {
+                  const count = getStatusCount(tab.id);
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setStatusFilter(tab.id)}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-smooth",
+                        statusFilter === tab.id
+                          ? "bg-muted text-foreground font-medium"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      )}
+                    >
+                      {tab.label}
+                      <span
+                        className={cn(
+                          "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs",
+                          statusFilter === tab.id
+                            ? "bg-foreground/10 text-foreground"
+                            : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Toolbar */}

@@ -433,7 +433,7 @@ export default function MyListings() {
                 )}
               </div>
             ) : viewMode === "grid" ? (
-              <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredListings.map((listing) => (
                   <Card key={listing.id} className="overflow-hidden">
                     <div className="relative aspect-[16/10]">

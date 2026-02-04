@@ -10,6 +10,7 @@ import { UndervaluedProperties } from "@/components/UndervaluedProperties";
 import { GenerateListing } from "@/components/GenerateListing";
 import { RentAnalytics } from "@/components/RentAnalytics";
 import { RentAnalyticsV2 } from "@/components/RentAnalyticsV2";
+import { AgentGrid } from "@/components/AgentGrid";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -22,6 +23,7 @@ const UNDERVALUED_KEYWORDS = ["undervalued"];
 const GENERATE_LISTING_KEYWORDS = ["generate listing", "create listing", "new listing"];
 const RENT_ANALYTICS_KEYWORDS = ["avg rent", "rent miami", "average rent"];
 const RENT_ANALYTICS_V2_KEYWORDS = ["rental analytics"];
+const AGENT_KEYWORDS = ["find agent", "find agents", "real estate agent"];
 
 const ChatWorkspace = () => {
   const [searchParams] = useSearchParams();
@@ -49,6 +51,9 @@ const ChatWorkspace = () => {
   const [showRentAnalyticsV2, setShowRentAnalyticsV2] = useState(
     RENT_ANALYTICS_V2_KEYWORDS.some(kw => lowerPrompt.includes(kw))
   );
+  const [showAgentGrid, setShowAgentGrid] = useState(
+    AGENT_KEYWORDS.some(kw => lowerPrompt.includes(kw))
+  );
   const navigate = useNavigate();
 
   const handleItemClick = (item: string) => {
@@ -75,52 +80,49 @@ const ChatWorkspace = () => {
   const handleChatMessage = (message: string) => {
     const lowerMessage = message.toLowerCase();
     
-    if (RENT_ANALYTICS_V2_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+    // Reset all panels first
+    const resetPanels = () => {
+      setShowRentAnalyticsV2(false);
+      setShowRentAnalytics(false);
+      setShowGenerateListing(false);
+      setShowPropertyListing(false);
+      setShowValuation(false);
+      setShowUndervalued(false);
+      setShowAgentGrid(false);
+    };
+    
+    if (AGENT_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      resetPanels();
+      setShowAgentGrid(true);
+    } else if (RENT_ANALYTICS_V2_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      resetPanels();
       setShowRentAnalyticsV2(true);
-      setShowRentAnalytics(false);
-      setShowGenerateListing(false);
-      setShowPropertyListing(false);
-      setShowValuation(false);
-      setShowUndervalued(false);
     } else if (RENT_ANALYTICS_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      resetPanels();
       setShowRentAnalytics(true);
-      setShowRentAnalyticsV2(false);
-      setShowGenerateListing(false);
-      setShowPropertyListing(false);
-      setShowValuation(false);
-      setShowUndervalued(false);
     } else if (GENERATE_LISTING_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      resetPanels();
       setShowGenerateListing(true);
-      setShowRentAnalytics(false);
-      setShowRentAnalyticsV2(false);
-      setShowPropertyListing(false);
-      setShowValuation(false);
-      setShowUndervalued(false);
     } else if (PROPERTY_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      resetPanels();
       setShowPropertyListing(true);
-      setShowRentAnalytics(false);
-      setShowRentAnalyticsV2(false);
-      setShowValuation(false);
-      setShowUndervalued(false);
-      setShowGenerateListing(false);
     } else if (VALUATION_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      resetPanels();
       setShowValuation(true);
-      setShowRentAnalytics(false);
-      setShowRentAnalyticsV2(false);
-      setShowPropertyListing(false);
-      setShowUndervalued(false);
-      setShowGenerateListing(false);
     } else if (UNDERVALUED_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
+      resetPanels();
       setShowUndervalued(true);
-      setShowRentAnalytics(false);
-      setShowRentAnalyticsV2(false);
-      setShowPropertyListing(false);
-      setShowValuation(false);
-      setShowGenerateListing(false);
     }
   };
 
   const renderRightPanel = () => {
+    if (showAgentGrid) {
+      return (
+        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+          <AgentGrid />
+        </div>
+      );
+    }
     if (showRentAnalyticsV2) {
       return (
         <div className="h-full rounded-2xl border border-border/50 overflow-hidden">

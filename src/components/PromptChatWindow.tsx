@@ -57,6 +57,11 @@ const HINT_CHIPS: HintChip[] = [
     basePrompt: "Find distress ",
     locations: ["Abu Dhabi", "Sydney", "Barcelona"]
   },
+  { 
+    label: "Find agent", 
+    basePrompt: "Find agent in ",
+    locations: ["Los Angeles", "Austin", "Chicago"]
+  },
 ];
 
 export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWindowProps) => {

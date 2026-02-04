@@ -185,7 +185,7 @@ const ChatWorkspace = () => {
       />
 
       {/* Main Content - Two Panel Layout */}
-      <main className="flex flex-1 p-3 gap-3">
+      <main className="flex flex-1 p-3 gap-3 pl-0">
         <ResizablePanelGroup direction="horizontal" className="flex-1">
           {/* Chat Panel - Left Side */}
           <ResizablePanel defaultSize={40} minSize={30} maxSize={60}>

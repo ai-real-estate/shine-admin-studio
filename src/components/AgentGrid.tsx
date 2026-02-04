@@ -212,7 +212,7 @@ export const AgentGrid = () => {
   };
 
   const renderGridView = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-1 p-1">
       {mockAgents.map((agent) => (
         <div
           key={agent.id}

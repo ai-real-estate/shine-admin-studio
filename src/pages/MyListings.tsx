@@ -332,7 +332,7 @@ export default function MyListings() {
           }}
         >
           {/* Header */}
-          <div className="flex flex-col gap-3 border-b border-border/50 p-4">
+          <div className="glass-header flex flex-col gap-3 border-b border-border/50 p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <LayoutList className="h-5 w-5 text-muted-foreground" />

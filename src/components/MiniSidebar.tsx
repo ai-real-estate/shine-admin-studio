@@ -1,7 +1,8 @@
-import { Zap, FileText, Globe, GitBranch, Code, Bell, Settings, User, Share2, LayoutList } from "lucide-react";
+import { Zap, FileText, Globe, Bell, Settings, User, Share2, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 interface MiniSidebarProps {
   activeItem: string;
@@ -25,23 +26,51 @@ const bottomItems = [
   { id: "account", icon: User, label: "Account" },
 ];
 
-export function MiniSidebar({ activeItem, onItemClick, unreadCount = 0 }: MiniSidebarProps) {
+const SidebarLogo = memo(function SidebarLogo() {
   const navigate = useNavigate();
 
   return (
+    <button
+      onClick={() => navigate("/")}
+      className="mb-6 flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-accent transition-opacity hover:opacity-80"
+      type="button"
+    >
+      <img src="/logo.png" alt="Estatio logo" className="h-8 object-cover" draggable={false} />
+    </button>
+  );
+});
+
+export function MiniSidebar({ activeItem, onItemClick, unreadCount = 0 }: MiniSidebarProps) {
+  const [bouncingItemId, setBouncingItemId] = useState<string | null>(null);
+  const bounceTimerRef = useRef<number | null>(null);
+
+  const triggerBounce = useCallback((itemId: string) => {
+    if (bounceTimerRef.current) {
+      window.clearTimeout(bounceTimerRef.current);
+      bounceTimerRef.current = null;
+    }
+
+    setBouncingItemId(null);
+    window.requestAnimationFrame(() => {
+      setBouncingItemId(itemId);
+      bounceTimerRef.current = window.setTimeout(() => {
+        setBouncingItemId(null);
+        bounceTimerRef.current = null;
+      }, 350);
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (bounceTimerRef.current) {
+        window.clearTimeout(bounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  return (
     <div className="flex h-screen w-16 flex-col items-center bg-background py-4">
-      {/* Logo */}
-      <button
-        onClick={() => navigate("/")}
-        className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-accent hover:opacity-80 transition-opacity cursor-pointer"
-      >
-        {/* <span className="text-lg font-bold text-accent-foreground">P</span> */}
-        <img
-          src="/logo.png"
-          alt="Estatio logo"
-          className="h-8 object-cover"
-        />
-      </button>
+      <SidebarLogo />
 
       {/* Main Navigation */}
       <nav className="flex flex-1 flex-col items-center gap-1">
@@ -49,13 +78,18 @@ export function MiniSidebar({ activeItem, onItemClick, unreadCount = 0 }: MiniSi
           <Tooltip key={item.id} delayDuration={0}>
             <TooltipTrigger asChild>
               <button
-                onClick={() => onItemClick(item.id)}
+                onClick={() => {
+                  triggerBounce(item.id);
+                  onItemClick(item.id);
+                }}
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-lg transition-smooth",
+                  "flex h-10 w-10 items-center justify-center rounded-lg transition-smooth will-change-transform",
                   activeItem === item.id
                     ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  bouncingItemId === item.id && "motion-safe:animate-sidebar-bounce motion-reduce:animate-none"
                 )}
+                type="button"
               >
                 <item.icon className="h-5 w-5" strokeWidth={1.5} />
               </button>
@@ -73,13 +107,18 @@ export function MiniSidebar({ activeItem, onItemClick, unreadCount = 0 }: MiniSi
           <Tooltip key={item.id} delayDuration={0}>
             <TooltipTrigger asChild>
               <button
-                onClick={() => onItemClick(item.id)}
+                onClick={() => {
+                  triggerBounce(item.id);
+                  onItemClick(item.id);
+                }}
                 className={cn(
-                  "relative flex h-10 w-10 items-center justify-center rounded-lg transition-smooth",
+                  "relative flex h-10 w-10 items-center justify-center rounded-lg transition-smooth will-change-transform",
                   activeItem === item.id
                     ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  bouncingItemId === item.id && "motion-safe:animate-sidebar-bounce motion-reduce:animate-none"
                 )}
+                type="button"
               >
                 <item.icon className="h-5 w-5" strokeWidth={1.5} />
                 {item.hasBadge && unreadCount > 0 && (

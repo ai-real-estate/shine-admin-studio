@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MiniSidebar } from "@/components/MiniSidebar";
-import { SettingsPanel } from "@/components/SettingsPanel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -213,36 +211,12 @@ const formatPrice = (price: number) => {
 };
 
 export default function MyListings() {
-  const [activeItem, setActiveItem] = useState("my-listings");
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("source-groups");
   const [listings, setListings] = useState(mockListings);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const handleItemClick = (item: string) => {
-    setActiveItem(item);
-    if (item === "notifications") {
-      navigate("/notifications");
-      return;
-    }
-    if (item === "platforms") {
-      navigate("/platforms");
-      return;
-    }
-    if (item === "my-listings") {
-      return;
-    }
-    if (item === "settings") {
-      setSettingsOpen(true);
-    } else {
-      setSettingsOpen(false);
-      navigate("/");
-    }
-  };
 
   const filteredListings = listings.filter((listing) => {
     const matchesStatus = statusFilter === "all" || listing.status === statusFilter;
@@ -310,27 +284,13 @@ export default function MyListings() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-background">
-      <MiniSidebar activeItem={activeItem} onItemClick={handleItemClick} unreadCount={2} />
-
-      <SettingsPanel
-        isOpen={settingsOpen}
-        onClose={() => {
-          setSettingsOpen(false);
-          setActiveItem("my-listings");
-        }}
-        activeSection={activeSection}
-        onSectionClick={setActiveSection}
-      />
-
-      <main className="flex flex-1 p-3 pl-0">
-        <div
-          className="flex flex-1 flex-col rounded-2xl border border-border/50 overflow-hidden"
-          style={{
-            background: "radial-gradient(ellipse 60% 80% at 50% 40%, #fffdf7, #fafaf8 60%, #fff)",
-            boxShadow: "0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)",
-          }}
-        >
+    <div
+      className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border/50"
+      style={{
+        background: "radial-gradient(ellipse 60% 80% at 50% 40%, #fffdf7, #fafaf8 60%, #fff)",
+        boxShadow: "0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)",
+      }}
+    >
           {/* Header */}
           <div className="flex flex-col gap-3 border-b border-border/50 p-4">
             <div className="flex items-center justify-between gap-3">
@@ -638,8 +598,6 @@ export default function MyListings() {
               </div>
             )}
           </ScrollArea>
-        </div>
-      </main>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import ChatWorkspace from "./pages/ChatWorkspace";
 import ConnectPlatforms from "./pages/ConnectPlatforms";
 import MyListings from "./pages/MyListings";
 import NotFound from "./pages/NotFound";
+import AppShellLayout from "@/layouts/AppShellLayout";
 
 const queryClient = new QueryClient();
 
@@ -21,12 +22,14 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/chat" element={<ChatWorkspace />} />
-          <Route path="/platforms" element={<ConnectPlatforms />} />
-          <Route path="/my-listings" element={<MyListings />} />
+          <Route element={<AppShellLayout />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/chat" element={<ChatWorkspace />} />
+            <Route path="/platforms" element={<ConnectPlatforms />} />
+            <Route path="/my-listings" element={<MyListings />} />
+          </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

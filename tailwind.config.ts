@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -89,14 +90,22 @@ export default {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
+        "sidebar-bounce": {
+          "0%": { transform: "scale(1)" },
+          "25%": { transform: "scale(1.08)" },
+          "50%": { transform: "scale(0.96)" },
+          "75%": { transform: "scale(1.03)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "slide-in-right": "slide-in-right 0.2s ease-out",
         "fade-in": "fade-in 0.2s ease-out",
+        "sidebar-bounce": "sidebar-bounce 320ms cubic-bezier(0.22, 1, 0.36, 1)",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

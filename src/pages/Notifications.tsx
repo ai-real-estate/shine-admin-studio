@@ -1,9 +1,8 @@
 import { Bell, Check, Clock, MessageSquare, Users, Zap, Settings2, X } from "lucide-react";
-import { MiniSidebar } from "@/components/MiniSidebar";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
+import { useAppShell } from "@/contexts/AppShellContext";
 
 interface Notification {
   id: string;
@@ -98,7 +97,6 @@ interface NotificationPreferences {
 }
 
 export default function Notifications() {
-  const [activeItem, setActiveItem] = useState("notifications");
   const [notifications, setNotifications] = useState(mockNotifications);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [showPreferences, setShowPreferences] = useState(false);
@@ -110,21 +108,6 @@ export default function Notifications() {
     email: false,
     push: true,
   });
-  const navigate = useNavigate();
-
-  const handleItemClick = (item: string) => {
-    setActiveItem(item);
-    if (item === "notifications") return;
-    if (item === "platforms") {
-      navigate("/platforms");
-      return;
-    }
-    if (item === "my-listings") {
-      navigate("/my-listings");
-      return;
-    }
-    navigate("/");
-  };
 
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
@@ -137,6 +120,11 @@ export default function Notifications() {
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const { setUnreadCount } = useAppShell();
+
+  useEffect(() => {
+    setUnreadCount(unreadCount);
+  }, [setUnreadCount, unreadCount]);
 
   const filteredNotifications =
     activeFilter === "all"
@@ -148,17 +136,13 @@ export default function Notifications() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <MiniSidebar activeItem={activeItem} onItemClick={handleItemClick} unreadCount={unreadCount} />
-
-      <main className="flex flex-1 p-3 pl-0">
-        <div
-          className="flex flex-1 flex-col rounded-2xl border border-border/50"
-          style={{
-            background: "radial-gradient(ellipse 60% 80% at 50% 40%, #fffdf7, #fafaf8 60%, #fff)",
-            boxShadow: "0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)",
-          }}
-        >
+    <div
+      className="flex flex-1 flex-col rounded-2xl border border-border/50"
+      style={{
+        background: "radial-gradient(ellipse 60% 80% at 50% 40%, #fffdf7, #fafaf8 60%, #fff)",
+        boxShadow: "0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)",
+      }}
+    >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/30 px-6 py-4">
             <div className="flex items-center gap-3">
@@ -388,8 +372,6 @@ export default function Notifications() {
               </div>
             )}
           </div>
-        </div>
-      </main>
     </div>
   );
 }

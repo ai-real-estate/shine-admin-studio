@@ -217,7 +217,7 @@ export const AgentGrid = () => {
         <div
           key={agent.id}
           onClick={() => handleAgentClick(agent)}
-          className="relative overflow-hidden rounded-xl border border-border/50 bg-card cursor-pointer group hover:border-primary/30 transition-all duration-200"
+          className="relative overflow-hidden rounded-lg border border-border/50 bg-card cursor-pointer group hover:border-primary/30 transition-all duration-200"
         >
           {/* Full-card background image */}
           <div className="relative aspect-[4/3]">
@@ -267,7 +267,7 @@ export const AgentGrid = () => {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button
+                  {/* <Button
                     size="sm"
                     variant="secondary"
                     className="rounded-full bg-white/90 text-foreground hover:bg-white"
@@ -277,7 +277,7 @@ export const AgentGrid = () => {
                     }}
                   >
                     More info
-                  </Button>
+                  </Button> */}
                   <Button
                     size="icon"
                     variant="secondary"

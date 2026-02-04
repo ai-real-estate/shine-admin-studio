@@ -143,235 +143,271 @@ export default function Notifications() {
         boxShadow: "0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)",
       }}
     >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-border/30 px-6 py-4">
-            <div className="flex items-center gap-3">
-              <Bell className="h-5 w-5 text-foreground" strokeWidth={1.5} />
-              <h1 className="text-xl font-semibold text-foreground">Notifications</h1>
-              {unreadCount > 0 && (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-xs font-medium text-accent-foreground">
-                  {unreadCount}
-                </span>
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-border/30 px-6 py-4">
+        <div className="flex items-center gap-3">
+          <Bell className="h-5 w-5 text-foreground" strokeWidth={1.5} />
+          <h1 className="text-xl font-semibold text-foreground">Notifications</h1>
+          {unreadCount > 0 && (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-xs font-medium text-accent-foreground">
+              {unreadCount}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowPreferences(!showPreferences)}
+            className={cn(
+              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-smooth",
+              showPreferences
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <Settings2 className="h-4 w-4" strokeWidth={1.5} />
+            Preferences
+          </button>
+          {unreadCount > 0 && (
+            <button
+              onClick={markAllAsRead}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground"
+            >
+              <Check className="h-4 w-4" strokeWidth={1.5} />
+              Mark all as read
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Filter Tabs */}
+      <div className="flex items-center gap-1 border-b border-border/30 px-6 py-3">
+        {filterTabs.map((tab) => {
+          const count =
+            tab.id === "all"
+              ? notifications.length
+              : notifications.filter((n) => n.type === tab.id).length;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveFilter(tab.id)}
+              className={cn(
+                "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-smooth",
+                activeFilter === tab.id
+                  ? "bg-muted text-foreground font-medium"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowPreferences(!showPreferences)}
+            >
+              <tab.icon className="h-4 w-4" strokeWidth={1.5} />
+              {tab.label}
+              <span
                 className={cn(
-                  "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-smooth",
-                  showPreferences
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs",
+                  activeFilter === tab.id
+                    ? "bg-foreground/10 text-foreground"
+                    : "bg-muted text-muted-foreground"
                 )}
               >
-                <Settings2 className="h-4 w-4" strokeWidth={1.5} />
-                Preferences
-              </button>
-              {unreadCount > 0 && (
-                <button
-                  onClick={markAllAsRead}
-                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground"
-                >
-                  <Check className="h-4 w-4" strokeWidth={1.5} />
-                  Mark all as read
-                </button>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Notifications List */}
+        <div
+          className={cn(
+            "flex-1 overflow-y-auto",
+            showPreferences && "border-r border-border/30"
+          )}
+        >
+          <div className="mx-auto w-full max-w-2xl p-4">
+            <div className="flex flex-col gap-2">
+              {filteredNotifications.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <Bell
+                    className="mb-3 h-12 w-12 text-muted-foreground/50"
+                    strokeWidth={1}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    No notifications in this category
+                  </p>
+                </div>
+              ) : (
+                filteredNotifications.map((notification) => {
+                  const Icon = getNotificationIcon(notification.type);
+                  return (
+                    <button
+                      key={notification.id}
+                      onClick={() => markAsRead(notification.id)}
+                      className={`flex items-start gap-4 rounded-xl p-4 text-left transition-smooth ${
+                        notification.read
+                          ? "hover:bg-muted/50"
+                          : "bg-muted/30 hover:bg-muted/50"
+                      }`}
+                    >
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+                          notification.read ? "bg-muted" : "bg-accent"
+                        }`}
+                      >
+                        <Icon
+                          className={`h-5 w-5 ${
+                            notification.read
+                              ? "text-muted-foreground"
+                              : "text-accent-foreground"
+                          }`}
+                          strokeWidth={1.5}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3
+                            className={`text-sm ${
+                              notification.read
+                                ? "font-medium text-foreground"
+                                : "font-semibold text-foreground"
+                            }`}
+                          >
+                            {notification.title}
+                          </h3>
+                          {!notification.read && (
+                            <span className="h-2 w-2 rounded-full bg-accent" />
+                          )}
+                        </div>
+                        <p className="mt-0.5 text-sm text-muted-foreground line-clamp-2">
+                          {notification.description}
+                        </p>
+                        <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" strokeWidth={1.5} />
+                          {notification.time}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })
               )}
             </div>
           </div>
+        </div>
 
-          {/* Filter Tabs */}
-          <div className="flex items-center gap-1 border-b border-border/30 px-6 py-3">
-            {filterTabs.map((tab) => {
-              const count =
-                tab.id === "all"
-                  ? notifications.length
-                  : notifications.filter((n) => n.type === tab.id).length;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveFilter(tab.id)}
-                  className={cn(
-                    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-smooth",
-                    activeFilter === tab.id
-                      ? "bg-muted text-foreground font-medium"
-                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                  )}
-                >
-                  <tab.icon className="h-4 w-4" strokeWidth={1.5} />
-                  {tab.label}
-                  <span
-                    className={cn(
-                      "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs",
-                      activeFilter === tab.id
-                        ? "bg-foreground/10 text-foreground"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        {/* Preferences Panel */}
+        {showPreferences && (
+          <div className="w-80 shrink-0 overflow-y-auto p-4 animate-slide-in-right">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-foreground">
+                Notification Preferences
+              </h2>
+              <button
+                onClick={() => setShowPreferences(false)}
+                className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+              >
+                <X className="h-4 w-4" strokeWidth={1.5} />
+              </button>
+            </div>
 
-          {/* Content Area */}
-          <div className="flex flex-1 overflow-hidden">
-            {/* Notifications List */}
-            <div className={cn("flex-1 overflow-y-auto p-4", showPreferences && "border-r border-border/30")}>
-              <div className="flex flex-col gap-2">
-                {filteredNotifications.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <Bell className="h-12 w-12 text-muted-foreground/50 mb-3" strokeWidth={1} />
-                    <p className="text-sm text-muted-foreground">No notifications in this category</p>
+            {/* Notification Types */}
+            <div className="mb-6">
+              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Notification Types
+              </h3>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare
+                      className="h-4 w-4 text-muted-foreground"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-sm text-foreground">Messages</span>
                   </div>
-                ) : (
-                  filteredNotifications.map((notification) => {
-                    const Icon = getNotificationIcon(notification.type);
-                    return (
-                      <button
-                        key={notification.id}
-                        onClick={() => markAsRead(notification.id)}
-                        className={`flex items-start gap-4 rounded-xl p-4 text-left transition-smooth ${
-                          notification.read
-                            ? "hover:bg-muted/50"
-                            : "bg-muted/30 hover:bg-muted/50"
-                        }`}
-                      >
-                        <div
-                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                            notification.read ? "bg-muted" : "bg-accent"
-                          }`}
-                        >
-                          <Icon
-                            className={`h-5 w-5 ${
-                              notification.read ? "text-muted-foreground" : "text-accent-foreground"
-                            }`}
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3
-                              className={`text-sm ${
-                                notification.read
-                                  ? "font-medium text-foreground"
-                                  : "font-semibold text-foreground"
-                              }`}
-                            >
-                              {notification.title}
-                            </h3>
-                            {!notification.read && (
-                              <span className="h-2 w-2 rounded-full bg-accent" />
-                            )}
-                          </div>
-                          <p className="mt-0.5 text-sm text-muted-foreground line-clamp-2">
-                            {notification.description}
-                          </p>
-                          <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" strokeWidth={1.5} />
-                            {notification.time}
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })
-                )}
+                  <Switch
+                    checked={preferences.messages}
+                    onCheckedChange={() => togglePreference("messages")}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Zap
+                      className="h-4 w-4 text-muted-foreground"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-sm text-foreground">Updates</span>
+                  </div>
+                  <Switch
+                    checked={preferences.updates}
+                    onCheckedChange={() => togglePreference("updates")}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users
+                      className="h-4 w-4 text-muted-foreground"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-sm text-foreground">Team</span>
+                  </div>
+                  <Switch
+                    checked={preferences.team}
+                    onCheckedChange={() => togglePreference("team")}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Bell
+                      className="h-4 w-4 text-muted-foreground"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-sm text-foreground">System</span>
+                  </div>
+                  <Switch
+                    checked={preferences.system}
+                    onCheckedChange={() => togglePreference("system")}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Preferences Panel */}
-            {showPreferences && (
-              <div className="w-80 shrink-0 overflow-y-auto p-4 animate-slide-in-right">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-sm font-semibold text-foreground">Notification Preferences</h2>
-                  <button
-                    onClick={() => setShowPreferences(false)}
-                    className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-                  >
-                    <X className="h-4 w-4" strokeWidth={1.5} />
-                  </button>
-                </div>
-
-                {/* Notification Types */}
-                <div className="mb-6">
-                  <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">
-                    Notification Types
-                  </h3>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
-                        <span className="text-sm text-foreground">Messages</span>
-                      </div>
-                      <Switch
-                        checked={preferences.messages}
-                        onCheckedChange={() => togglePreference("messages")}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
-                        <span className="text-sm text-foreground">Updates</span>
-                      </div>
-                      <Switch
-                        checked={preferences.updates}
-                        onCheckedChange={() => togglePreference("updates")}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
-                        <span className="text-sm text-foreground">Team</span>
-                      </div>
-                      <Switch
-                        checked={preferences.team}
-                        onCheckedChange={() => togglePreference("team")}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Bell className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
-                        <span className="text-sm text-foreground">System</span>
-                      </div>
-                      <Switch
-                        checked={preferences.system}
-                        onCheckedChange={() => togglePreference("system")}
-                      />
-                    </div>
+            {/* Delivery Methods */}
+            <div>
+              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Delivery Methods
+              </h3>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-sm text-foreground">
+                      Email notifications
+                    </span>
+                    <p className="text-xs text-muted-foreground">
+                      Receive notifications via email
+                    </p>
                   </div>
+                  <Switch
+                    checked={preferences.email}
+                    onCheckedChange={() => togglePreference("email")}
+                  />
                 </div>
-
-                {/* Delivery Methods */}
-                <div>
-                  <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">
-                    Delivery Methods
-                  </h3>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-sm text-foreground">Email notifications</span>
-                        <p className="text-xs text-muted-foreground">Receive notifications via email</p>
-                      </div>
-                      <Switch
-                        checked={preferences.email}
-                        onCheckedChange={() => togglePreference("email")}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-sm text-foreground">Push notifications</span>
-                        <p className="text-xs text-muted-foreground">Receive browser push notifications</p>
-                      </div>
-                      <Switch
-                        checked={preferences.push}
-                        onCheckedChange={() => togglePreference("push")}
-                      />
-                    </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-sm text-foreground">
+                      Push notifications
+                    </span>
+                    <p className="text-xs text-muted-foreground">
+                      Receive browser push notifications
+                    </p>
                   </div>
+                  <Switch
+                    checked={preferences.push}
+                    onCheckedChange={() => togglePreference("push")}
+                  />
                 </div>
               </div>
-            )}
+            </div>
           </div>
+        )}
+      </div>
     </div>
   );
 }

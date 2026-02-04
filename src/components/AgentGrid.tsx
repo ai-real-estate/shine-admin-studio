@@ -202,7 +202,7 @@ const getBadgeColor = (badge: Agent["badge"]) => {
 };
 
 export const AgentGrid = () => {
-  const [viewMode, setViewMode] = useState<"grid" | "map" | "table">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -289,48 +289,6 @@ export const AgentGrid = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  const renderMapView = () => (
-    <div className="relative h-full min-h-[500px] bg-muted/30">
-      {/* Simple map placeholder with markers */}
-      <div className="absolute inset-0 bg-gradient-to-br from-muted/20 to-muted/40">
-        <img
-          src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&h=800&fit=crop"
-          alt="Map"
-          className="w-full h-full object-cover opacity-30"
-        />
-      </div>
-
-      {/* Agent markers */}
-      {mockAgents.map((agent) => (
-        <div
-          key={agent.id}
-          className="absolute cursor-pointer transform -translate-x-1/2 -translate-y-1/2 group"
-          style={{ left: `${agent.coordinates.x}%`, top: `${agent.coordinates.y}%` }}
-          onClick={() => handleAgentClick(agent)}
-        >
-          <div className="relative">
-            <Avatar className="h-12 w-12 border-3 border-white shadow-lg group-hover:scale-110 transition-transform">
-              <AvatarImage src={agent.avatar} alt={agent.name} />
-              <AvatarFallback>
-                {agent.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-l-transparent border-r-transparent border-t-white" />
-          </div>
-
-          {/* Hover tooltip */}
-          <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-card rounded-lg shadow-lg p-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-            <p className="font-semibold text-sm">{agent.name}</p>
-            <p className="text-xs text-muted-foreground">{agent.city}</p>
           </div>
         </div>
       ))}
@@ -425,15 +383,6 @@ export const AgentGrid = () => {
             Grid
           </Button>
           <Button
-            variant={viewMode === "map" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setViewMode("map")}
-            className="gap-1.5"
-          >
-            <Map className="h-4 w-4" />
-            Map
-          </Button>
-          <Button
             variant={viewMode === "table" ? "default" : "ghost"}
             size="sm"
             onClick={() => setViewMode("table")}
@@ -448,7 +397,6 @@ export const AgentGrid = () => {
       {/* Content */}
       <ScrollArea className="flex-1">
         {viewMode === "grid" && renderGridView()}
-        {viewMode === "map" && renderMapView()}
         {viewMode === "table" && renderTableView()}
       </ScrollArea>
 

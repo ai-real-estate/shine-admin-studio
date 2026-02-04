@@ -232,7 +232,7 @@ const ConnectPlatforms = () => {
         onSectionClick={setActiveSection}
       />
 
-      <main className="flex flex-1 p-3">
+      <main className="flex flex-1 p-3 pl-0">
         <div
           className="flex flex-1 flex-col rounded-2xl border border-border/50 overflow-hidden"
           style={{

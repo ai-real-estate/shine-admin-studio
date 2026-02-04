@@ -151,7 +151,7 @@ export default function Notifications() {
     <div className="flex min-h-screen bg-background">
       <MiniSidebar activeItem={activeItem} onItemClick={handleItemClick} unreadCount={unreadCount} />
 
-      <main className="flex flex-1 p-3">
+      <main className="flex flex-1 p-3 pl-0">
         <div
           className="flex flex-1 flex-col rounded-2xl border border-border/50"
           style={{

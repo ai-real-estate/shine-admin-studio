@@ -323,7 +323,7 @@ export default function MyListings() {
         onSectionClick={setActiveSection}
       />
 
-      <main className="flex flex-1 p-3">
+      <main className="flex flex-1 p-3 pl-0">
         <div
           className="flex flex-1 flex-col rounded-2xl border border-border/50 overflow-hidden"
           style={{
@@ -332,7 +332,7 @@ export default function MyListings() {
           }}
         >
           {/* Header */}
-          <div className="glass-header flex flex-col gap-3 border-b border-border/50 p-4">
+          <div className="flex flex-col gap-3 border-b border-border/50 p-4">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <LayoutList className="h-5 w-5 text-muted-foreground" />

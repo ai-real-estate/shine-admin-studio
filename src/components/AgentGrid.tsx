@@ -338,7 +338,7 @@ export const AgentGrid = () => {
   );
 
   const renderTableView = () => (
-    <div className="p-6">
+    <div className="">
       <Table>
         <TableHeader>
           <TableRow>

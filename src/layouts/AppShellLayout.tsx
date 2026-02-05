@@ -1,5 +1,6 @@
 import { MiniSidebar } from "@/components/MiniSidebar";
 import { SettingsPanel } from "@/components/SettingsPanel";
+import { HistoryPanel } from "@/components/HistoryPanel";
 import { AppShellProvider } from "@/contexts/AppShellContext";
 import { useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -17,6 +18,7 @@ export default function AppShellLayout() {
   const navigate = useNavigate();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("source-groups");
   const [homeActiveItem, setHomeActiveItem] = useState("api");
   const [unreadCount, setUnreadCount] = useState(2);
@@ -28,16 +30,26 @@ export default function AppShellLayout() {
   }, [location.pathname]);
 
   const activeItem = useMemo(() => {
+    if (settingsOpen) return "settings";
+    if (historyOpen) return "history";
     return getActiveItem(location.pathname, homeActiveItem);
-  }, [homeActiveItem, location.pathname]);
+  }, [historyOpen, homeActiveItem, location.pathname, settingsOpen]);
 
   const handleItemClick = (item: string) => {
     if (item === "settings") {
       setSettingsOpen(true);
+      setHistoryOpen(false);
+      return;
+    }
+
+    if (item === "history") {
+      setHistoryOpen(true);
+      setSettingsOpen(false);
       return;
     }
 
     setSettingsOpen(false);
+    setHistoryOpen(false);
 
     if (item === "notifications") {
       navigate("/notifications");
@@ -71,6 +83,18 @@ export default function AppShellLayout() {
           onSectionClick={setActiveSection}
         />
 
+        <HistoryPanel
+          isOpen={historyOpen}
+          onClose={() => {
+            setHistoryOpen(false);
+            setHomeActiveItem("api");
+          }}
+          onOpenChat={(chatId) => {
+            navigate(`/chat?chatId=${encodeURIComponent(chatId)}`);
+            setHistoryOpen(false);
+          }}
+        />
+
         <main className="flex flex-1 p-3 pl-0">
           <Outlet />
         </main>
@@ -78,4 +102,3 @@ export default function AppShellLayout() {
     </AppShellProvider>
   );
 }
-

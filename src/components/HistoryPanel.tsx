@@ -1,4 +1,4 @@
-import { X, FileText, Sparkles } from "lucide-react";
+import { PinOff, FileText, Sparkles } from "lucide-react";
 import { formatDistanceToNowStrict } from "date-fns";
 import { cn } from "@/lib/utils";
 import { listChats, onChatHistoryUpdated, type ChatSession } from "@/lib/chatHistory";
@@ -57,7 +57,7 @@ export function HistoryPanel({ isOpen, onClose, onOpenChat }: HistoryPanelProps)
           className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground"
           type="button"
         >
-          <X className="h-4 w-4" strokeWidth={1.5} />
+          <PinOff className="h-4 w-4" strokeWidth={1.5} />
         </button>
       </div>
 

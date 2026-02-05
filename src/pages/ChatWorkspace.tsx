@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChatPanel } from "@/components/ChatPanel";
 import { PreviewPanel } from "@/components/PreviewPanel";
+import { MessageCirclePlus } from "lucide-react";
 import { PropertyListing } from "@/components/PropertyListing";
 import { PropertyValuation } from "@/components/PropertyValuation";
 import { UndervaluedProperties } from "@/components/UndervaluedProperties";
@@ -42,6 +43,16 @@ const ChatWorkspace = () => {
   const [showRentAnalytics, setShowRentAnalytics] = useState(false);
   const [showRentAnalyticsV2, setShowRentAnalyticsV2] = useState(false);
   const [showAgentGrid, setShowAgentGrid] = useState(false);
+
+  const resetPanels = () => {
+    setShowRentAnalyticsV2(false);
+    setShowRentAnalytics(false);
+    setShowGenerateListing(false);
+    setShowPropertyListing(false);
+    setShowValuation(false);
+    setShowUndervalued(false);
+    setShowAgentGrid(false);
+  };
 
   useEffect(() => {
     if (chatIdParam) {
@@ -101,18 +112,7 @@ const ChatWorkspace = () => {
 
   const handleChatMessage = (message: string) => {
     const lowerMessage = message.toLowerCase();
-    
-    // Reset all panels first
-    const resetPanels = () => {
-      setShowRentAnalyticsV2(false);
-      setShowRentAnalytics(false);
-      setShowGenerateListing(false);
-      setShowPropertyListing(false);
-      setShowValuation(false);
-      setShowUndervalued(false);
-      setShowAgentGrid(false);
-    };
-    
+
     if (AGENT_KEYWORDS.some(kw => lowerMessage.includes(kw))) {
       resetPanels();
       setShowAgentGrid(true);
@@ -135,6 +135,13 @@ const ChatWorkspace = () => {
       resetPanels();
       setShowUndervalued(true);
     }
+  };
+
+  const handleNewChat = () => {
+    const nextChatId = createEmptyChat();
+    resetPanels();
+    setSearchParams({ chatId: nextChatId }, { replace: false });
+    setChatId(nextChatId);
   };
 
   useEffect(() => {
@@ -238,9 +245,20 @@ const ChatWorkspace = () => {
 
     return (
       <div className="flex flex-1 flex-col h-full">
+        <button
+          type="button"
+          onClick={handleNewChat}
+          aria-label="New chat"
+          className="fixed top-[calc(env(safe-area-inset-top)+1rem)] right-[calc(env(safe-area-inset-right)+1rem)] z-40 h-12 w-12 rounded-full glass-fab flex items-center justify-center"
+        >
+          <span className="h-9 w-9 rounded-full bg-accent text-accent-foreground flex items-center justify-center">
+            <MessageCirclePlus className="h-5 w-5" strokeWidth={1.5} />
+          </span>
+        </button>
+
         {/* Content area - scrollable */}
         <div
-          className="flex-1 overflow-auto pt-12"
+          className="flex-1 overflow-auto pt-16"
           style={{ paddingBottom: mobilePaddingBottom }}
         >
           <div style={{ marginBottom: mobileContentMarginBottom }}>

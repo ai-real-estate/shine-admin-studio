@@ -232,21 +232,27 @@ const ChatWorkspace = () => {
 
   // Mobile layout: full screen content with bottom input
   if (isMobile) {
+    const MOBILE_SCROLL_GAP = 24;
+    const mobilePaddingBottom = chatId ? composerHeight + MOBILE_SCROLL_GAP : 0;
+    const mobileContentMarginBottom = chatId ? -composerHeight : 0;
+
     return (
       <div className="flex flex-1 flex-col h-full">
         {/* Content area - scrollable */}
         <div
           className="flex-1 overflow-auto pt-12"
-          style={{ paddingBottom: chatId ? composerHeight : 0 }}
+          style={{ paddingBottom: mobilePaddingBottom }}
         >
-          {renderRightPanel()}
+          <div style={{ marginBottom: mobileContentMarginBottom }}>
+            {renderRightPanel()}
+          </div>
         </div>
         
         {/* Bottom input area */}
         {chatId && (
           <div
             ref={composerRef}
-            className="fixed inset-x-0 bottom-0 z-50 bg-background px-3 pb-[env(safe-area-inset-bottom)]"
+            className="fixed left-3 right-3 bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] z-50"
           >
             <ChatPanel 
               chatId={chatId} 

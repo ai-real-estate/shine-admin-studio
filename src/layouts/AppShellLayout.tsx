@@ -103,7 +103,7 @@ export default function AppShellLayout() {
          )}
 
          {!isMobile && (
-           <HistoryPanel
+         <HistoryPanel
           isOpen={historyOpen}
           onClose={() => {
             setHistoryOpen(false);
@@ -120,8 +120,10 @@ export default function AppShellLayout() {
            {/* Mobile hamburger button - absolute positioned */}
            {isMobile && (
              <button
+               type="button"
                onClick={() => setMobileDrawerOpen(true)}
-               className="absolute top-4 left-4 z-10 p-2"
+               aria-label="Open menu"
+               className="fixed top-[calc(env(safe-area-inset-top)+1rem)] left-[calc(env(safe-area-inset-left)+1rem)] z-40 h-12 w-12 rounded-full glass-fab flex items-center justify-center"
              >
                <Menu className="h-6 w-6 text-foreground" strokeWidth={1.5} />
              </button>

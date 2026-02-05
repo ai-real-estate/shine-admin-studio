@@ -5,13 +5,14 @@
  import {
    MessageSquare,
    FolderOpen,
-   LayoutGrid,
-   Code,
-   Star,
+   Zap,
+   FileText,
+   MessageCirclePlus,
    Bell,
    Settings,
    Share2,
    LayoutList,
+   User,
  } from "lucide-react";
  
  interface MobileDrawerProps {
@@ -23,10 +24,11 @@
  }
  
  const mainNavItems = [
-   { id: "web", icon: MessageSquare, label: "Chats" },
-   { id: "projects", icon: FolderOpen, label: "Projects" },
-   { id: "api", icon: LayoutGrid, label: "Artifacts" },
-   { id: "code", icon: Code, label: "Code" },
+   { id: "web", icon: MessageCirclePlus, label: "Web" },
+   { id: "history", icon: FileText, label: "History" },
+   { id: "api", icon: Zap, label: "API" },
+   { id: "platforms", icon: Share2, label: "Platforms" },
+   { id: "my-listings", icon: LayoutList, label: "My Listings" },
  ];
  
  const starredItems = [
@@ -45,10 +47,9 @@
  ];
  
  const bottomNavItems = [
-   { id: "platforms", icon: Share2, label: "Platforms" },
-   { id: "my-listings", icon: LayoutList, label: "My Listings" },
    { id: "notifications", icon: Bell, label: "Notifications", hasBadge: true },
    { id: "settings", icon: Settings, label: "Settings" },
+   { id: "account", icon: User, label: "Account" },
  ];
  
  export function MobileDrawer({

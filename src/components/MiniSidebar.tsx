@@ -32,7 +32,7 @@ const SidebarLogo = memo(function SidebarLogo() {
   return (
     <button
       onClick={() => navigate("/")}
-      className="mb-6 flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-accent transition-opacity hover:opacity-80"
+      className="mb-6 flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl transition-opacity hover:opacity-80"
       type="button"
     >
       <img src="/logo2.png" alt="Estatio logo" className="h-8 object-cover" draggable={false} />

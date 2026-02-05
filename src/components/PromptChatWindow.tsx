@@ -347,7 +347,7 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
       </h1>
 
       {/* Input Card */}
-       <div className={`w-full rounded-2xl border border-border bg-card shadow-soft overflow-hidden ${isMobile ? "mx-2" : ""}`}>
+       <div className={`w-full border border-border bg-card shadow-soft overflow-hidden ${isMobile ? "mx-2 rounded-lg" : "rounded-2xl"}`}>
         {/* Textarea */}
         <Textarea
           ref={textareaRef}

@@ -5,9 +5,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Plus, Paperclip, Palette, ChevronDown, ArrowUp, AudioLines } from "lucide-react";
+import { Plus, Paperclip, Palette, ChevronDown, ArrowUp, AudioLines, Camera, FolderPlus, Github, Search, Globe, Brush, Blocks } from "lucide-react";
 import {
   DEFAULT_MOCK_PROFILE,
   getLocationSlangGreeting,
@@ -354,9 +355,53 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
         <div className="flex items-center justify-between px-3 py-3 border-t border-border/50">
           {/* Left side buttons */}
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-foreground">
-              <Plus className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-foreground rounded-full bg-muted/50 hover:bg-muted">
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem className="gap-3">
+                  <Paperclip className="h-4 w-4" />
+                  <span>Add files or photos</span>
+                  <span className="ml-auto text-xs text-muted-foreground">⌘U</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-3">
+                  <Camera className="h-4 w-4" />
+                  <span>Take a screenshot</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-3">
+                  <FolderPlus className="h-4 w-4" />
+                  <span>Add to project</span>
+                  <ChevronDown className="ml-auto h-4 w-4 -rotate-90" />
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-3">
+                  <Github className="h-4 w-4" />
+                  <span>Add from GitHub</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-3">
+                  <Search className="h-4 w-4" />
+                  <span>Research</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-3 text-primary">
+                  <Globe className="h-4 w-4" />
+                  <span>Web search</span>
+                  <span className="ml-auto text-primary">✓</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-3">
+                  <Brush className="h-4 w-4" />
+                  <span>Use style</span>
+                  <ChevronDown className="ml-auto h-4 w-4 -rotate-90" />
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-3">
+                  <Blocks className="h-4 w-4" />
+                  <span>Connectors</span>
+                  <ChevronDown className="ml-auto h-4 w-4 -rotate-90" />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5">
               <Paperclip className="h-4 w-4" />

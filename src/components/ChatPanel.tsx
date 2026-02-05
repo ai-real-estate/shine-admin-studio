@@ -65,17 +65,25 @@ export function ChatPanel({ chatId, onMessage, mobileMode = false }: ChatPanelPr
     }, 500);
   };
 
-  // Mobile mode: just the input bar at bottom
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  // Mobile mode: composer only (reuse same UI as desktop)
   if (mobileMode) {
     return (
-      <ChatComposer
-        variant="mobile"
-        value={prompt}
-        onChange={setPrompt}
-        onSubmit={handleSubmit}
-        placeholder="Reply..."
-        disabled={!prompt.trim()}
-      />
+      <div className="border-t border-border bg-background p-3 pb-4">
+        <ChatComposer
+          value={prompt}
+          onChange={setPrompt}
+          onKeyDown={handleKeyDown}
+          onSubmit={handleSubmit}
+          disabled={!prompt.trim()}
+        />
+      </div>
     );
   }
 
@@ -108,14 +116,16 @@ export function ChatPanel({ chatId, onMessage, mobileMode = false }: ChatPanelPr
         </div>
       </ScrollArea>
 
-      <ChatComposer
-        variant="desktop"
-        value={prompt}
-        onChange={setPrompt}
-        onSubmit={handleSubmit}
-        placeholder="Send a message..."
-        disabled={!prompt.trim()}
-      />
+      {/* Input Area */}
+      <div className="p-3">
+        <ChatComposer
+          value={prompt}
+          onChange={setPrompt}
+          onKeyDown={handleKeyDown}
+          onSubmit={handleSubmit}
+          disabled={!prompt.trim()}
+        />
+      </div>
     </div>
   );
 }

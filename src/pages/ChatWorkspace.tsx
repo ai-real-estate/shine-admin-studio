@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ChatPanel } from "@/components/ChatPanel";
 import { PreviewPanel } from "@/components/PreviewPanel";
 import { PropertyListing } from "@/components/PropertyListing";
@@ -26,6 +27,7 @@ const AGENT_KEYWORDS = ["find agent", "find agents", "real estate agent"];
 
 const ChatWorkspace = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const isMobile = useIsMobile();
   const promptParam = searchParams.get("prompt") || "";
   const chatIdParam = searchParams.get("chatId") || "";
 
@@ -148,28 +150,28 @@ const ChatWorkspace = () => {
   const renderRightPanel = () => {
     if (showAgentGrid) {
       return (
-        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+        <div className={`h-full overflow-hidden ${isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"}`}>
           <AgentGrid />
         </div>
       );
     }
     if (showRentAnalyticsV2) {
       return (
-        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+        <div className={`h-full overflow-hidden ${isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"}`}>
           <RentAnalyticsV2 />
         </div>
       );
     }
     if (showRentAnalytics) {
       return (
-        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+        <div className={`h-full overflow-hidden ${isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"}`}>
           <RentAnalytics />
         </div>
       );
     }
     if (showGenerateListing) {
       return (
-        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+        <div className={`h-full overflow-hidden ${isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"}`}>
           <GenerateListing
             onSaveDraft={(title) => {
               if (!chatId) return;
@@ -181,28 +183,50 @@ const ChatWorkspace = () => {
     }
     if (showUndervalued) {
       return (
-        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+        <div className={`h-full overflow-hidden ${isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"}`}>
           <UndervaluedProperties />
         </div>
       );
     }
     if (showValuation) {
       return (
-        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+        <div className={`h-full overflow-hidden ${isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"}`}>
           <PropertyValuation />
         </div>
       );
     }
     if (showPropertyListing) {
       return (
-        <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
+        <div className={`h-full overflow-hidden ${isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"}`}>
           <PropertyListing />
         </div>
       );
     }
-    return <PreviewPanel />;
+    return <PreviewPanel isMobile={isMobile} />;
   };
 
+  // Mobile layout: full screen content with bottom input
+  if (isMobile) {
+    return (
+      <div className="flex flex-1 flex-col h-full relative">
+        {/* Content area - scrollable */}
+        <div className="flex-1 overflow-auto pt-12">
+          {renderRightPanel()}
+        </div>
+        
+        {/* Bottom input area */}
+        {chatId && (
+          <ChatPanel 
+            chatId={chatId} 
+            onMessage={handleChatMessage} 
+            mobileMode 
+          />
+        )}
+      </div>
+    );
+  }
+
+  // Desktop layout: resizable panels
   return (
     <div className="flex flex-1 gap-3">
       <ResizablePanelGroup direction="horizontal" className="flex-1">

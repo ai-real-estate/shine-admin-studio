@@ -1,5 +1,4 @@
  import { MiniSidebar } from "@/components/MiniSidebar";
- import { MobileHeader } from "@/components/MobileHeader";
  import { MobileDrawer } from "@/components/MobileDrawer";
  import { useIsMobile } from "@/hooks/use-mobile";
 import { SettingsPanel } from "@/components/SettingsPanel";
@@ -7,6 +6,7 @@ import { HistoryPanel } from "@/components/HistoryPanel";
 import { AppShellProvider } from "@/contexts/AppShellContext";
  import { useEffect, useMemo, useState, useCallback } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+ import { Menu } from "lucide-react";
 
 function getActiveItem(pathname: string, homeActiveItem: string) {
   if (pathname.startsWith("/notifications")) return "notifications";
@@ -76,11 +76,6 @@ export default function AppShellLayout() {
   return (
     <AppShellProvider value={{ unreadCount, setUnreadCount }}>
        <div className="flex h-screen w-full flex-col bg-background md:flex-row">
-         {/* Mobile Header - only visible on mobile */}
-         {isMobile && (
-           <MobileHeader onMenuClick={() => setMobileDrawerOpen(true)} />
-         )}
- 
          {/* Mobile Drawer */}
          <MobileDrawer
            isOpen={mobileDrawerOpen}
@@ -121,7 +116,16 @@ export default function AppShellLayout() {
            />
          )}
 
-         <main className="flex flex-1 p-3 md:pl-0">
+         <main className="flex flex-1 p-3 md:pl-0 relative">
+           {/* Mobile hamburger button - absolute positioned */}
+           {isMobile && (
+             <button
+               onClick={() => setMobileDrawerOpen(true)}
+               className="absolute top-4 left-4 z-10 p-2"
+             >
+               <Menu className="h-6 w-6 text-foreground" strokeWidth={1.5} />
+             </button>
+           )}
           <Outlet />
         </main>
       </div>

@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+ import { useState, useEffect, useRef, useCallback } from "react";
+ import { useIsMobile } from "@/hooks/use-mobile";
+ import { useHaptic } from "@/hooks/use-haptic";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -66,6 +68,8 @@ const HINT_CHIPS: HintChip[] = [
 ];
 
 export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWindowProps) => {
+   const isMobile = useIsMobile();
+   const haptic = useHaptic();
   const readMockProfile = (): MockUserProfile => {
     if (typeof window === "undefined") {
       return {
@@ -229,6 +233,7 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
 
   const handleSubmit = () => {
     if (prompt.trim() && onSubmit && !isAnimating) {
+       haptic.medium();
       onSubmit(prompt);
       setPrompt("");
     }
@@ -299,7 +304,9 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
     });
   };
 
-  const handleChipClick = (chip: HintChip) => {
+   const handleChipClick = useCallback((chip: HintChip) => {
+     haptic.selection();
+     
     // Stop any current animation
     if (animationRef.current) {
       clearTimeout(animationRef.current);
@@ -321,7 +328,7 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
     }
     
     textareaRef.current?.focus();
-  };
+   }, [haptic]);
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     // If user starts typing, stop animation
@@ -333,14 +340,14 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4">
+     <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4 pb-6">
       {/* Greeting */}
-      <h1 className="text-3xl md:text-4xl font-semibold text-foreground mb-8 text-center">
+       <h1 className="text-2xl md:text-4xl font-semibold text-foreground mb-6 md:mb-8 text-center">
         {greeting}
       </h1>
 
       {/* Input Card */}
-      <div className="w-full rounded-2xl border border-border bg-card shadow-soft overflow-hidden">
+       <div className={`w-full rounded-2xl border border-border bg-card shadow-soft overflow-hidden ${isMobile ? "mx-2" : ""}`}>
         {/* Textarea */}
         <Textarea
           ref={textareaRef}
@@ -352,9 +359,9 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
         />
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-3 py-3 border-t border-border/50">
+         <div className="flex items-center justify-between px-3 py-3 border-t border-border/50 flex-wrap gap-2">
           {/* Left side buttons */}
-          <div className="flex items-center gap-1">
+           <div className="flex items-center gap-1 flex-wrap">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-foreground rounded-full bg-muted/50 hover:bg-muted">
@@ -403,14 +410,14 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5">
+             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5 hidden md:flex">
               <Paperclip className="h-4 w-4" />
               <span className="text-sm">Attach</span>
             </Button>
 
-            <DropdownMenu>
+             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1">
+                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1 hidden md:flex">
                   <Palette className="h-4 w-4" />
                   <span className="text-sm">Theme</span>
                   <ChevronDown className="h-3 w-3" />
@@ -426,7 +433,7 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
 
           {/* Right side buttons */}
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hidden md:flex">
               <span className="text-sm">Plan</span>
             </Button>
 
@@ -447,12 +454,12 @@ export const PromptChatWindow = ({ userName = "there", onSubmit }: PromptChatWin
       </div>
 
       {/* Hint Chips */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+       <div className="flex flex-wrap items-center justify-center gap-2 mt-4 px-2">
         {HINT_CHIPS.map((chip) => (
           <button
             key={chip.label}
             onClick={() => handleChipClick(chip)}
-            className="px-3 py-1.5 text-sm rounded-full border border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-card hover:border-foreground/20 transition-all duration-200"
+             className="px-3 py-1.5 text-sm rounded-full border border-border bg-card/50 text-muted-foreground hover:text-foreground hover:bg-card hover:border-foreground/20 transition-all duration-200 active:scale-95"
           >
             {chip.label}
           </button>

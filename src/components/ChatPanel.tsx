@@ -75,15 +75,14 @@ export function ChatPanel({ chatId, onMessage, mobileMode = false }: ChatPanelPr
   // Mobile mode: composer only (reuse same UI as desktop)
   if (mobileMode) {
     return (
-      <div className="border-t border-border bg-background p-3 pb-4">
-        <ChatComposer
-          value={prompt}
-          onChange={setPrompt}
-          onKeyDown={handleKeyDown}
-          onSubmit={handleSubmit}
-          disabled={!prompt.trim()}
-        />
-      </div>
+      <ChatComposer
+        value={prompt}
+        onChange={setPrompt}
+        onKeyDown={handleKeyDown}
+        onSubmit={handleSubmit}
+        disabled={!prompt.trim()}
+        className="glass-composer border-border/60 shadow-soft"
+      />
     );
   }
 

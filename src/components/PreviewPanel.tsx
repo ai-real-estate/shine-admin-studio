@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { Copy, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export function PreviewPanel() {
+interface PreviewPanelProps {
+  isMobile?: boolean;
+}
+
+export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
   const [typedText, setTypedText] = useState("");
   const fullText = "Building your app...";
 
@@ -21,7 +28,10 @@ export function PreviewPanel() {
 
   return (
     <div 
-      className="flex h-full flex-col items-center justify-center rounded-2xl border border-border/50 p-8"
+      className={cn(
+        "flex h-full flex-col items-center justify-center p-8",
+        isMobile ? "rounded-lg" : "rounded-2xl border border-border/50"
+      )}
       style={{ 
         background: 'radial-gradient(ellipse 60% 80% at 50% 40%, hsl(var(--accent) / 0.1), hsl(var(--background)) 60%, hsl(var(--background)))',
         boxShadow: '0 1px 3px -1px rgba(0, 0, 0, 0.03), 0 2px 8px -2px rgba(0, 0, 0, 0.04)'

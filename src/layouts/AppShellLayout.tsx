@@ -1,8 +1,11 @@
-import { MiniSidebar } from "@/components/MiniSidebar";
+ import { MiniSidebar } from "@/components/MiniSidebar";
+ import { MobileHeader } from "@/components/MobileHeader";
+ import { MobileDrawer } from "@/components/MobileDrawer";
+ import { useIsMobile } from "@/hooks/use-mobile";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { AppShellProvider } from "@/contexts/AppShellContext";
-import { useEffect, useMemo, useState } from "react";
+ import { useEffect, useMemo, useState, useCallback } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 function getActiveItem(pathname: string, homeActiveItem: string) {
@@ -16,9 +19,11 @@ function getActiveItem(pathname: string, homeActiveItem: string) {
 export default function AppShellLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+   const isMobile = useIsMobile();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("source-groups");
   const [homeActiveItem, setHomeActiveItem] = useState("api");
   const [unreadCount, setUnreadCount] = useState(2);
@@ -35,7 +40,7 @@ export default function AppShellLayout() {
     return getActiveItem(location.pathname, homeActiveItem);
   }, [historyOpen, homeActiveItem, location.pathname, settingsOpen]);
 
-  const handleItemClick = (item: string) => {
+   const handleItemClick = useCallback((item: string) => {
     if (item === "settings") {
       setSettingsOpen(true);
       setHistoryOpen(false);
@@ -66,14 +71,32 @@ export default function AppShellLayout() {
 
     setHomeActiveItem(item);
     navigate("/");
-  };
+   }, [navigate]);
 
   return (
     <AppShellProvider value={{ unreadCount, setUnreadCount }}>
-      <div className="flex h-screen w-full bg-background">
-        <MiniSidebar activeItem={activeItem} onItemClick={handleItemClick} unreadCount={unreadCount} />
+       <div className="flex h-screen w-full flex-col bg-background md:flex-row">
+         {/* Mobile Header - only visible on mobile */}
+         {isMobile && (
+           <MobileHeader onMenuClick={() => setMobileDrawerOpen(true)} />
+         )}
+ 
+         {/* Mobile Drawer */}
+         <MobileDrawer
+           isOpen={mobileDrawerOpen}
+           onClose={() => setMobileDrawerOpen(false)}
+           activeItem={activeItem}
+           onItemClick={handleItemClick}
+           unreadCount={unreadCount}
+         />
+ 
+         {/* Desktop Sidebar - hidden on mobile */}
+         {!isMobile && (
+           <MiniSidebar activeItem={activeItem} onItemClick={handleItemClick} unreadCount={unreadCount} />
+         )}
 
-        <SettingsPanel
+         {!isMobile && (
+           <SettingsPanel
           isOpen={settingsOpen}
           onClose={() => {
             setSettingsOpen(false);
@@ -81,9 +104,11 @@ export default function AppShellLayout() {
           }}
           activeSection={activeSection}
           onSectionClick={setActiveSection}
-        />
+           />
+         )}
 
-        <HistoryPanel
+         {!isMobile && (
+           <HistoryPanel
           isOpen={historyOpen}
           onClose={() => {
             setHistoryOpen(false);
@@ -93,9 +118,10 @@ export default function AppShellLayout() {
             navigate(`/chat?chatId=${encodeURIComponent(chatId)}`);
             setHistoryOpen(false);
           }}
-        />
+           />
+         )}
 
-        <main className="flex flex-1 p-3 pl-0">
+         <main className="flex flex-1 p-3 md:pl-0">
           <Outlet />
         </main>
       </div>

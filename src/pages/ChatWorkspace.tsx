@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChatPanel } from "@/components/ChatPanel";
@@ -32,6 +32,8 @@ const ChatWorkspace = () => {
   const chatIdParam = searchParams.get("chatId") || "";
 
   const [chatId, setChatId] = useState<string>("");
+  const composerRef = useRef<HTMLDivElement | null>(null);
+  const [composerHeight, setComposerHeight] = useState<number>(180);
 
   const [showPropertyListing, setShowPropertyListing] = useState(false);
   const [showValuation, setShowValuation] = useState(false);
@@ -73,6 +75,29 @@ const ChatWorkspace = () => {
     setShowRentAnalyticsV2(RENT_ANALYTICS_V2_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
     setShowAgentGrid(AGENT_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
   }, [chatId, seedText]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    if (!chatId) return;
+    if (!composerRef.current) return;
+
+    const el = composerRef.current;
+    const initial = el.getBoundingClientRect().height;
+    setComposerHeight(initial || 180);
+
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      setComposerHeight(entry.contentRect.height);
+    });
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [chatId, isMobile]);
 
   const handleChatMessage = (message: string) => {
     const lowerMessage = message.toLowerCase();
@@ -208,19 +233,27 @@ const ChatWorkspace = () => {
   // Mobile layout: full screen content with bottom input
   if (isMobile) {
     return (
-      <div className="flex flex-1 flex-col h-full relative">
+      <div className="flex flex-1 flex-col h-full">
         {/* Content area - scrollable */}
-        <div className="flex-1 overflow-auto pt-12">
+        <div
+          className="flex-1 overflow-auto pt-12"
+          style={{ paddingBottom: chatId ? composerHeight : 0 }}
+        >
           {renderRightPanel()}
         </div>
         
         {/* Bottom input area */}
         {chatId && (
-          <ChatPanel 
-            chatId={chatId} 
-            onMessage={handleChatMessage} 
-            mobileMode 
-          />
+          <div
+            ref={composerRef}
+            className="fixed inset-x-0 bottom-0 z-50 bg-background px-3 pb-[env(safe-area-inset-bottom)]"
+          >
+            <ChatPanel 
+              chatId={chatId} 
+              onMessage={handleChatMessage} 
+              mobileMode 
+            />
+          </div>
         )}
       </div>
     );

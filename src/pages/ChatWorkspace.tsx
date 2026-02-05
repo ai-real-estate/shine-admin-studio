@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ChatPanel } from "@/components/ChatPanel";
 import { PreviewPanel } from "@/components/PreviewPanel";
@@ -9,6 +9,7 @@ import { GenerateListing } from "@/components/GenerateListing";
 import { RentAnalytics } from "@/components/RentAnalytics";
 import { RentAnalyticsV2 } from "@/components/RentAnalyticsV2";
 import { AgentGrid } from "@/components/AgentGrid";
+import { addArtifact, addDocument, createChatFromPrompt, createEmptyChat, getChat } from "@/lib/chatHistory";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -24,31 +25,52 @@ const RENT_ANALYTICS_V2_KEYWORDS = ["rental analytics"];
 const AGENT_KEYWORDS = ["find agent", "find agents", "real estate agent"];
 
 const ChatWorkspace = () => {
-  const [searchParams] = useSearchParams();
-  const initialPrompt = searchParams.get("prompt") || "";
-  const lowerPrompt = initialPrompt.toLowerCase();
-  
-  const [showPropertyListing, setShowPropertyListing] = useState(
-    PROPERTY_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-  );
-  const [showValuation, setShowValuation] = useState(
-    VALUATION_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-  );
-  const [showUndervalued, setShowUndervalued] = useState(
-    UNDERVALUED_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-  );
-  const [showGenerateListing, setShowGenerateListing] = useState(
-    GENERATE_LISTING_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-  );
-  const [showRentAnalytics, setShowRentAnalytics] = useState(
-    RENT_ANALYTICS_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-  );
-  const [showRentAnalyticsV2, setShowRentAnalyticsV2] = useState(
-    RENT_ANALYTICS_V2_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-  );
-  const [showAgentGrid, setShowAgentGrid] = useState(
-    AGENT_KEYWORDS.some(kw => lowerPrompt.includes(kw))
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const promptParam = searchParams.get("prompt") || "";
+  const chatIdParam = searchParams.get("chatId") || "";
+
+  const [chatId, setChatId] = useState<string>("");
+
+  const [showPropertyListing, setShowPropertyListing] = useState(false);
+  const [showValuation, setShowValuation] = useState(false);
+  const [showUndervalued, setShowUndervalued] = useState(false);
+  const [showGenerateListing, setShowGenerateListing] = useState(false);
+  const [showRentAnalytics, setShowRentAnalytics] = useState(false);
+  const [showRentAnalyticsV2, setShowRentAnalyticsV2] = useState(false);
+  const [showAgentGrid, setShowAgentGrid] = useState(false);
+
+  useEffect(() => {
+    if (chatIdParam) {
+      const existing = getChat(chatIdParam);
+      if (existing) {
+        setChatId(chatIdParam);
+        return;
+      }
+    }
+
+    const nextChatId = promptParam.trim() ? createChatFromPrompt(promptParam) : createEmptyChat();
+    setSearchParams({ chatId: nextChatId }, { replace: true });
+    setChatId(nextChatId);
+  }, [chatIdParam, promptParam, setSearchParams]);
+
+  const seedText = useMemo(() => {
+    if (!chatId) return "";
+    const session = getChat(chatId);
+    const firstUserMessage = session?.messages?.find((m) => m.role === "user")?.content ?? "";
+    return firstUserMessage || session?.title || "";
+  }, [chatId]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    const lowerSeed = seedText.toLowerCase();
+    setShowPropertyListing(PROPERTY_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
+    setShowValuation(VALUATION_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
+    setShowUndervalued(UNDERVALUED_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
+    setShowGenerateListing(GENERATE_LISTING_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
+    setShowRentAnalytics(RENT_ANALYTICS_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
+    setShowRentAnalyticsV2(RENT_ANALYTICS_V2_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
+    setShowAgentGrid(AGENT_KEYWORDS.some((kw) => lowerSeed.includes(kw)));
+  }, [chatId, seedText]);
 
   const handleChatMessage = (message: string) => {
     const lowerMessage = message.toLowerCase();
@@ -88,6 +110,41 @@ const ChatWorkspace = () => {
     }
   };
 
+  useEffect(() => {
+    if (!chatId) return;
+    if (showAgentGrid) addArtifact(chatId, "Agent Grid");
+  }, [chatId, showAgentGrid]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    if (showRentAnalyticsV2) addArtifact(chatId, "Rent Analytics");
+  }, [chatId, showRentAnalyticsV2]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    if (showRentAnalytics) addArtifact(chatId, "Avg Rent");
+  }, [chatId, showRentAnalytics]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    if (showGenerateListing) addArtifact(chatId, "Generate Listing");
+  }, [chatId, showGenerateListing]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    if (showUndervalued) addArtifact(chatId, "Undervalued Properties");
+  }, [chatId, showUndervalued]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    if (showValuation) addArtifact(chatId, "Property Valuation");
+  }, [chatId, showValuation]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    if (showPropertyListing) addArtifact(chatId, "Property Listing");
+  }, [chatId, showPropertyListing]);
+
   const renderRightPanel = () => {
     if (showAgentGrid) {
       return (
@@ -113,7 +170,12 @@ const ChatWorkspace = () => {
     if (showGenerateListing) {
       return (
         <div className="h-full rounded-2xl border border-border/50 overflow-hidden">
-          <GenerateListing />
+          <GenerateListing
+            onSaveDraft={(title) => {
+              if (!chatId) return;
+              addDocument(chatId, title);
+            }}
+          />
         </div>
       );
     }
@@ -145,7 +207,11 @@ const ChatWorkspace = () => {
     <div className="flex flex-1 gap-3">
       <ResizablePanelGroup direction="horizontal" className="flex-1">
         <ResizablePanel defaultSize={40} minSize={30} maxSize={60}>
-          <ChatPanel initialPrompt={initialPrompt} onMessage={handleChatMessage} />
+          {chatId ? (
+            <ChatPanel chatId={chatId} onMessage={handleChatMessage} />
+          ) : (
+            <div className="h-full rounded-2xl border border-border/50 bg-card" />
+          )}
         </ResizablePanel>
 
         <ResizableHandle withHandle className="mx-1" />

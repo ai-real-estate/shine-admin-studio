@@ -59,6 +59,10 @@ interface Platform {
   selected: boolean;
 }
 
+interface GenerateListingProps {
+  onSaveDraft?: (title: string) => void;
+}
+
 const INITIAL_PLATFORMS: Platform[] = [
   { id: "mls", name: "MLS", icon: <Building className="h-4 w-4" />, selected: true },
   { id: "zillow", name: "Zillow", icon: <Home className="h-4 w-4" />, selected: true },
@@ -93,7 +97,7 @@ const INITIAL_LISTING: GeneratedListing = {
   status: "draft",
 };
 
-export const GenerateListing = () => {
+export const GenerateListing = ({ onSaveDraft }: GenerateListingProps) => {
   const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
   const [listing, setListing] = useState<GeneratedListing>(INITIAL_LISTING);
   const [platforms, setPlatforms] = useState<Platform[]>(INITIAL_PLATFORMS);
@@ -199,6 +203,7 @@ export const GenerateListing = () => {
 
   const handleSaveDraft = () => {
     setListing((prev) => ({ ...prev, status: "draft" }));
+    onSaveDraft?.(listing.title);
     toast.success("Draft saved successfully");
   };
 

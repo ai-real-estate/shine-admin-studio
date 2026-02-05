@@ -1,4 +1,4 @@
-import { Zap, FileText, Globe, Bell, Settings, User, Share2, LayoutList } from "lucide-react";
+import { Zap, FileText, MessageCirclePlus, Bell, Settings, User, Share2, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
@@ -11,8 +11,8 @@ interface MiniSidebarProps {
 }
 
 const navItems = [
-  { id: "web", icon: Globe, label: "Web" },
-  { id: "documents", icon: FileText, label: "Documents" },
+  { id: "web", icon: MessageCirclePlus, label: "Web" },
+  { id: "history", icon: FileText, label: "History" },
   // { id: "sources", icon: GitBranch, label: "Sources" },
   // { id: "code", icon: Code, label: "Code" },
   { id: "api", icon: Zap, label: "API" },

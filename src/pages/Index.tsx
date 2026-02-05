@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { PromptChatWindow } from "@/components/PromptChatWindow";
+import { createChatFromPrompt } from "@/lib/chatHistory";
 
 const Index = () => {
   const navigate = useNavigate();
 
   const handlePromptSubmit = (prompt: string) => {
-    navigate(`/chat?prompt=${encodeURIComponent(prompt)}`);
+    const chatId = createChatFromPrompt(prompt);
+    navigate(`/chat?chatId=${encodeURIComponent(chatId)}`);
   };
 
   return (

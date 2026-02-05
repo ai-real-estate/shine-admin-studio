@@ -4,40 +4,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Paperclip, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
+import { appendMessage, getChat, type ChatMessage as StoredChatMessage } from "@/lib/chatHistory";
 
 interface ChatPanelProps {
-  initialPrompt?: string;
+  chatId: string;
   onMessage?: (message: string) => void;
 }
 
-export function ChatPanel({ initialPrompt, onMessage }: ChatPanelProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    const initial: ChatMessage[] = [];
-    if (initialPrompt) {
-      initial.push({
-        id: '1',
-        role: 'user',
-        content: initialPrompt,
-        timestamp: new Date(),
-      });
-      initial.push({
-        id: '2',
-        role: 'assistant',
-        content: "I'm working on that for you...",
-        timestamp: new Date(),
-      });
-    }
-    return initial;
-  });
+function safeId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+export function ChatPanel({ chatId, onMessage }: ChatPanelProps) {
+  const [messages, setMessages] = useState<StoredChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const session = getChat(chatId);
+    setMessages(session?.messages ?? []);
+  }, [chatId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -47,26 +36,30 @@ export function ChatPanel({ initialPrompt, onMessage }: ChatPanelProps) {
 
   const handleSubmit = () => {
     if (!prompt.trim()) return;
-    
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      role: 'user',
+
+    const now = Date.now();
+    const newMessage: StoredChatMessage = {
+      id: safeId(),
+      role: "user",
       content: prompt,
-      timestamp: new Date(),
+      createdAt: now,
     };
-    
-    setMessages(prev => [...prev, newMessage]);
+
+    setMessages((prev) => [...prev, newMessage]);
+    appendMessage(chatId, "user", prompt);
     onMessage?.(prompt);
     setPrompt("");
-    
+
     // Simulate AI response
     setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
+      const assistantMessage: StoredChatMessage = {
+        id: safeId(),
+        role: "assistant",
         content: "I'm processing your request...",
-        timestamp: new Date(),
-      }]);
+        createdAt: Date.now(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      appendMessage(chatId, "assistant", assistantMessage.content);
     }, 500);
   };
 
@@ -87,13 +80,13 @@ export function ChatPanel({ initialPrompt, onMessage }: ChatPanelProps) {
               key={message.id}
               className={cn(
                 "flex",
-                message.role === 'user' ? "justify-end" : "justify-start"
+                message.role === "user" ? "justify-end" : "justify-start"
               )}
             >
               <div
                 className={cn(
                   "max-w-[80%] rounded-lg px-4 py-2.5 text-sm",
-                  message.role === 'user'
+                  message.role === "user"
                     ? "bg-foreground text-background"
                     : "bg-muted text-foreground"
                 )}

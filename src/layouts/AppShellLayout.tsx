@@ -6,7 +6,8 @@ import { HistoryPanel } from "@/components/HistoryPanel";
 import { AppShellProvider } from "@/contexts/AppShellContext";
  import { useEffect, useMemo, useState, useCallback } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
- import { Menu } from "lucide-react";
+import { Menu } from "lucide-react";
+import { useHaptic } from "@/hooks/use-haptic";
 
 function getActiveItem(pathname: string, homeActiveItem: string) {
   if (pathname.startsWith("/notifications")) return "notifications";
@@ -20,6 +21,7 @@ export default function AppShellLayout() {
   const location = useLocation();
   const navigate = useNavigate();
    const isMobile = useIsMobile();
+  const haptic = useHaptic();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -121,7 +123,10 @@ export default function AppShellLayout() {
            {isMobile && (
              <button
                type="button"
-               onClick={() => setMobileDrawerOpen(true)}
+                onClick={() => {
+                  haptic.light();
+                  setMobileDrawerOpen(true);
+                }}
                aria-label="Open menu"
                className="fixed top-[calc(env(safe-area-inset-top)+1rem)] left-[calc(env(safe-area-inset-left)+1rem)] z-40 h-12 w-12 rounded-full glass-fab flex items-center justify-center"
              >
